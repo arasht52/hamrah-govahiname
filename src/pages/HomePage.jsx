@@ -73,6 +73,50 @@ export default function HomePage({ onStartQuiz, onOpenAI }) {
 
       <div style={{ ...card, padding: 16, fontSize: 12, color: "#FCA5A5", lineHeight: 1.8 }}>
         این نسخه هنوز محصول نهایی نیست. اطلاعات قانونی، جریمه‌ها و جزئیات آزمون باید قبل از انتشار عمومی با منابع رسمی TÜV، DEKRA، StVO یا Fahrschule بررسی شوند.
+        <SectionTitle>🚀 امکانات آینده</SectionTitle>
+
+<div
+  style={{
+    display: "grid",
+    gap: 12,
+    marginBottom: 30
+  }}
+>
+  {[
+    "🏫 آموزشگاه‌های رانندگی",
+    "👁 مراکز معاینه چشم",
+    "⛑ دوره کمک‌های اولیه",
+    "🚦 تابلوهای رانندگی",
+    "🗺 مراکز TÜV و DEKRA",
+    "📷 تحلیل تصاویر سوالات",
+    "🎥 تحلیل ویدئوها",
+    "💬 انجمن فارسی‌زبانان",
+    "📊 پروفایل و پیشرفت",
+    "⭐ نسخه Pro هوش مصنوعی"
+  ].map((item) => (
+    <div
+      key={item}
+      style={{
+        background: "#1a2f52",
+        border: "1px solid #1e3a5f",
+        borderRadius: 16,
+        padding: 16,
+        color: "#8B949E"
+      }}
+    >
+      {item}
+      <div
+        style={{
+          color: "#FFB340",
+          fontSize: 12,
+          marginTop: 6
+        }}
+      >
+        🚧 در حال توسعه
+      </div>
+    </div>
+  ))}
+</div>
       </div>
     </div>
   );
