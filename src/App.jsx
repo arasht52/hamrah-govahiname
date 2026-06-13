@@ -8,6 +8,7 @@ import QuizPage from "./pages/QuizPage";
 import ResultPage from "./pages/ResultPage";
 import AIPage from "./pages/AIPage";
 import LawsPage from "./pages/LawsPage";
+import FahrschulenPage from "./pages/FahrschulenPage";
 
 export default function App() {
   const [page, setPage] = useState("home");
@@ -65,6 +66,9 @@ export default function App() {
      {page === "laws" && (
   <LawsPage />
  )}
+{page === "fahrschulen" && (
+  <FahrschulenPage />
+)}
       </main>
 
       <BottomNav
