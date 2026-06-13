@@ -56,11 +56,15 @@ export default function App() {
           />
         )}
 
-        {page === "ai" && (
-          <AIPage
-            onBack={() => setPage("home")}
-          />
-        )}
+       {page === "ai" && (
+  <AIPage
+    onBack={() => setPage("home")}
+  />
+ )}
+
+     {page === "laws" && (
+  <LawsPage />
+ )}
       </main>
 
       <BottomNav
