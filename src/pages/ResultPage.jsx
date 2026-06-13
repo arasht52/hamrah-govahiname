@@ -1,47 +1,108 @@
 export default function ResultPage({ result, onRetry, onHome }) {
   const score = result?.score ?? 0;
-  const passed = score > 0;
+  const total = result?.total ?? 10;
+
+  const percent = Math.round((score / total) * 100);
+  const passed = percent >= 70;
 
   return (
     <div>
+      {/* نتیجه اصلی */}
       <div
         style={{
           textAlign: "center",
           background: "#1a2f52",
           border: "1px solid #1e3a5f",
-          borderRadius: 18,
-          padding: 24,
+          borderRadius: 20,
+          padding: 28,
           marginBottom: 20
         }}
       >
-        <div style={{ fontSize: 48, marginBottom: 12 }}>
-          {passed ? "✅" : "❌"}
+        <div style={{ fontSize: 60 }}>
+          {passed ? "🎉" : "😕"}
         </div>
 
         <h2
           style={{
-            fontSize: 22,
-            fontWeight: 900,
-            marginBottom: 8,
-            color: passed ? "#7EE787" : "#FCA5A5"
+            color: passed ? "#7EE787" : "#FCA5A5",
+            fontSize: 24,
+            fontWeight: 900
           }}
         >
-          {passed ? "پاسخ درست بود" : "پاسخ اشتباه بود"}
+          {passed ? "قبول شدی!" : "نیاز به تمرین بیشتر"}
         </h2>
 
-        <p
+        <div
           style={{
-            fontSize: 13,
-            color: "#8B949E",
-            lineHeight: 1.8
+            fontSize: 54,
+            fontWeight: 900,
+            color: "#FFB340",
+            marginTop: 16
           }}
         >
-          این فقط یک نتیجه نمونه برای MVP است. در نسخه بعدی، تحلیل کامل نقاط ضعف
-          و نمره منفی اضافه می‌شود.
-        </p>
+          {percent}%
+        </div>
+
+        <div
+          style={{
+            color: "#8B949E",
+            marginTop: 10,
+            fontSize: 14
+          }}
+        >
+          {score} پاسخ صحیح از {total} سوال
+        </div>
       </div>
 
-      <div style={{ display: "flex", gap: 12 }}>
+      {/* کارت اطلاعات */}
+      <div
+        style={{
+          background: "#1a2f52",
+          border: "1px solid #1e3a5f",
+          borderRadius: 16,
+          padding: 20,
+          marginBottom: 20
+        }}
+      >
+        <div
+          style={{
+            fontSize: 15,
+            fontWeight: 800,
+            marginBottom: 12
+          }}
+        >
+          امکانات نسخه کامل
+        </div>
+
+        <div
+          style={{
+            color: "#8B949E",
+            lineHeight: 2
+          }}
+        >
+          ✅ بانک سوالات کامل
+          <br />
+          ✅ سوالات تصویری
+          <br />
+          ✅ تحلیل نقاط ضعف
+          <br />
+          ✅ توضیح فارسی
+          <br />
+          ✅ نکات فرهنگی ایران و آلمان
+          <br />
+          ✅ دستیار هوشمند
+          <br />
+          ✅ معرفی آموزشگاه‌های همکار
+        </div>
+      </div>
+
+      {/* دکمه‌ها */}
+      <div
+        style={{
+          display: "flex",
+          gap: 12
+        }}
+      >
         <button
           onClick={onHome}
           style={{
@@ -49,11 +110,9 @@ export default function ResultPage({ result, onRetry, onHome }) {
             background: "#1a2f52",
             border: "1px solid #1e3a5f",
             borderRadius: 12,
-            padding: "13px 0",
-            fontSize: 14,
-            fontWeight: 700,
+            padding: "14px 0",
             color: "#8B949E",
-            cursor: "pointer",
+            fontWeight: 700,
             fontFamily: "inherit"
           }}
         >
@@ -67,11 +126,9 @@ export default function ResultPage({ result, onRetry, onHome }) {
             background: "#FF9500",
             border: "none",
             borderRadius: 12,
-            padding: "13px 0",
-            fontSize: 15,
-            fontWeight: 800,
+            padding: "14px 0",
             color: "#0A2540",
-            cursor: "pointer",
+            fontWeight: 800,
             fontFamily: "inherit"
           }}
         >
