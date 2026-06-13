@@ -3,6 +3,7 @@ export default function BottomNav({ active, onSelect }) {
     { id: "home", icon: "🏠", label: "خانه" },
     { id: "quiz", icon: "📝", label: "آزمون" },
     { id: "laws", icon: "📚", label: "قوانین" },
+    { id: "fahrschulen", icon: "🏫", label: "آموزشگاه" },
     { id: "ai", icon: "🤖", label: "دستیار" }
   ];
 
