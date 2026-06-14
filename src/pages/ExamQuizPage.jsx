@@ -1,5 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ALL_QUESTIONS } from "../data/allQuestions";
+import { COLORS } from "../theme/colors";
+import {
+  card,
+  page,
+  primaryButton,
+  secondaryButton,
+  softCard
+} from "../theme/components";
 
 const EXAM_LIMIT_MS = 45 * 60 * 1000;
 
@@ -20,25 +28,63 @@ function isExactAnswer(chosen, correct) {
   );
 }
 
+function buildAnswerRecord(question, chosenAnswers, marked) {
+  const correctAnswers = normalizeOk(question.ok);
+  const correct = isExactAnswer(chosenAnswers, correctAnswers);
+
+  return {
+    question,
+    correct,
+    chosenAnswers: [...chosenAnswers],
+    fehlerpunkte: correct ? 0 : question.points || 2,
+    marked
+  };
+}
+
+function buildWrongRecord(question, marked) {
+  return {
+    question,
+    correct: false,
+    chosenAnswers: [],
+    fehlerpunkte: question.points || 2,
+    marked
+  };
+}
+
 export default function ExamQuizPage({ onFinish, onBack }) {
-  const [queue] = useState(() => selectQuestions(ALL_QUESTIONS,30));
+  const [queue] = useState(() => selectQuestions(ALL_QUESTIONS, 30));
   const [idx, setIdx] = useState(0);
   const [chosenAnswers, setChosenAnswers] = useState([]);
   const [answersList, setAnswersList] = useState([]);
   const [marked, setMarked] = useState({});
   const [showTranslation, setShowTranslation] = useState(false);
-  const [startTime] = useState(() => Date.now());
-  const [locked, setLocked] = useState(false);
+  const [finished, setFinished] = useState(false);
+
+  const latestRef = useRef({
+    idx: 0,
+    chosenAnswers: [],
+    answersList: [],
+    marked: {},
+    queue: []
+  });
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      if (Date.now() - startTime >= EXAM_LIMIT_MS) {
-        setLocked(true);
-      }
-    }, 1000);
+    latestRef.current = {
+      idx,
+      chosenAnswers,
+      answersList,
+      marked,
+      queue
+    };
+  }, [idx, chosenAnswers, answersList, marked, queue]);
 
-    return () => clearInterval(timer);
-  }, [startTime]);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      finishByTimeout();
+    }, EXAM_LIMIT_MS);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const q = queue[idx];
   if (!q) return null;
@@ -48,11 +94,40 @@ export default function ExamQuizPage({ onFinish, onBack }) {
   const options = q.opts_de || q.opts || [];
   const optionsFa = q.opts_fa || [];
   const hasTranslation = Boolean(questionFa || optionsFa.length);
-  const progress = ((idx + 1) / queue.length) * 100;
   const currentMarked = !!marked[q.id];
 
+  function finishByTimeout() {
+    const latest = latestRef.current;
+
+    if (!latest.queue.length) return;
+
+    const finalAnswers = [...latest.answersList];
+
+    for (let i = latest.answersList.length; i < latest.queue.length; i++) {
+      const question = latest.queue[i];
+      const isCurrent = i === latest.idx;
+      const questionMarked = !!latest.marked[question.id];
+
+      if (isCurrent && latest.chosenAnswers.length > 0) {
+        finalAnswers.push(
+          buildAnswerRecord(question, latest.chosenAnswers, questionMarked)
+        );
+      } else {
+        finalAnswers.push(buildWrongRecord(question, questionMarked));
+      }
+    }
+
+    setFinished(true);
+
+    onFinish({
+      answersList: finalAnswers,
+      isExamMode: true,
+      timedOut: true
+    });
+  }
+
   function toggleAnswer(optionIndex) {
-    if (locked) return;
+    if (finished) return;
 
     setChosenAnswers((prev) =>
       prev.includes(optionIndex)
@@ -62,27 +137,21 @@ export default function ExamQuizPage({ onFinish, onBack }) {
   }
 
   function submitAnswer() {
-    if (chosenAnswers.length === 0 || locked) return;
+    if (chosenAnswers.length === 0 || finished) return;
 
-    const correctAnswers = normalizeOk(q.ok);
-    const correct = isExactAnswer(chosenAnswers, correctAnswers);
-
-    const record = {
-      question: q,
-      correct,
-      chosenAnswers: [...chosenAnswers],
-      fehlerpunkte: correct ? 0 : q.points || 2,
-      marked: currentMarked
-    };
-
+    const record = buildAnswerRecord(q, chosenAnswers, currentMarked);
     const updated = [...answersList, record];
+
     setAnswersList(updated);
 
     if (idx + 1 >= queue.length) {
+      setFinished(true);
+
       onFinish({
         answersList: updated,
         isExamMode: true
       });
+
       return;
     }
 
@@ -91,47 +160,16 @@ export default function ExamQuizPage({ onFinish, onBack }) {
     setShowTranslation(false);
   }
 
-  function resetExam() {
-    onBack();
-  }
-
-  if (locked) {
-    return (
-      <div style={lockedCard}>
-        <div style={{ fontSize: 48, marginBottom: 12 }}>⏱️</div>
-
-        <h2 style={lockedTitle}>
-          Die Bearbeitungszeit ist abgelaufen.
-        </h2>
-
-        <p style={lockedText}>
-          Bitte starten Sie die Prüfung erneut.
-        </p>
-
-        <button onClick={resetExam} style={primaryBtn}>
-          Neue Prüfung starten
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <div>
+    <div style={page}>
       <div style={examHeader}>
-        <button onClick={onBack} style={backBtn}>
+        <button onClick={onBack} style={secondaryAction}>
           ← Ende
         </button>
 
-        <div style={headerCenter}>
-          <div style={modeBadge}>Prüfung</div>
-          <div style={counter}>Frage {idx + 1} / {queue.length}</div>
-        </div>
+        <div style={modeBadge}>Prüfung</div>
 
         <div style={pointsBadge}>{q.points || 2} Punkte</div>
-      </div>
-
-      <div style={progressBar}>
-        <div style={{ ...progressFill, width: `${progress}%` }} />
       </div>
 
       <div style={questionCard}>
@@ -171,16 +209,18 @@ export default function ExamQuizPage({ onFinish, onBack }) {
               onClick={() => toggleAnswer(i)}
               style={{
                 ...optionBtn,
-                border: selected ? "2px solid #168A3A" : "2px solid #BBD7C0",
-                background: selected ? "#E8F6E8" : "#FFFFFF"
+                border: selected
+                  ? `2px solid ${COLORS.green}`
+                  : `2px solid ${COLORS.border}`,
+                background: selected ? COLORS.bgSoft : COLORS.white
               }}
             >
               <span
                 style={{
                   ...checkbox,
-                  background: selected ? "#168A3A" : "#FFFFFF",
-                  borderColor: selected ? "#168A3A" : "#9CA3AF",
-                  color: selected ? "#FFFFFF" : "transparent"
+                  background: selected ? COLORS.green : COLORS.white,
+                  borderColor: selected ? COLORS.green : "#9CA3AF",
+                  color: selected ? COLORS.white : "transparent"
                 }}
               >
                 ✓
@@ -198,40 +238,6 @@ export default function ExamQuizPage({ onFinish, onBack }) {
         })}
       </div>
 
-      <div style={questionGrid}>
-        {queue.map((item, i) => {
-          const answered = i < answersList.length;
-          const isCurrent = i === idx;
-          const isMarked = marked[item.id];
-
-          return (
-            <div
-              key={item.id || i}
-              style={{
-                ...gridItem,
-                background: isCurrent
-                  ? "#111827"
-                  : isMarked
-                  ? "#FACC15"
-                  : answered
-                  ? "#168A3A"
-                  : "#FFFFFF",
-                color: isCurrent
-                  ? "#FFFFFF"
-                  : isMarked
-                  ? "#111827"
-                  : answered
-                  ? "#FFFFFF"
-                  : "#168A3A",
-                borderColor: isCurrent ? "#111827" : "#BBD7C0"
-              }}
-            >
-              {i + 1}
-            </div>
-          );
-        })}
-      </div>
-
       <div style={actionRow}>
         <button
           onClick={() =>
@@ -239,9 +245,9 @@ export default function ExamQuizPage({ onFinish, onBack }) {
           }
           style={{
             ...markBtn,
-            background: currentMarked ? "#FACC15" : "#FFFFFF",
-            color: currentMarked ? "#111827" : "#168A3A",
-            borderColor: currentMarked ? "#FACC15" : "#BBD7C0"
+            background: currentMarked ? "#FACC15" : COLORS.white,
+            color: currentMarked ? COLORS.text : COLORS.green,
+            borderColor: currentMarked ? "#FACC15" : COLORS.border
           }}
         >
           {currentMarked ? "Markiert" : "Markieren"}
@@ -251,7 +257,7 @@ export default function ExamQuizPage({ onFinish, onBack }) {
           onClick={submitAnswer}
           disabled={chosenAnswers.length === 0}
           style={{
-            ...primaryBtn,
+            ...primaryAction,
             opacity: chosenAnswers.length === 0 ? 0.45 : 1,
             cursor: chosenAnswers.length === 0 ? "default" : "pointer"
           }}
@@ -267,73 +273,32 @@ const examHeader = {
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  gap: 10,
-  marginBottom: 12
-};
-
-const backBtn = {
-  background: "#FFFFFF",
-  border: "1px solid #BBD7C0",
-  borderRadius: 10,
-  padding: "8px 12px",
-  color: "#168A3A",
-  fontWeight: 900,
-  cursor: "pointer",
-  fontFamily: "inherit"
-};
-
-const headerCenter = {
-  textAlign: "center"
+  gap: 10
 };
 
 const modeBadge = {
   display: "inline-block",
-  background: "#E8F6E8",
-  border: "1px solid #BBD7C0",
-  color: "#168A3A",
+  background: COLORS.bgSoft,
+  border: `1px solid ${COLORS.border}`,
+  color: COLORS.green,
   borderRadius: 18,
-  padding: "4px 10px",
-  fontSize: 11,
-  fontWeight: 950,
-  marginBottom: 4
-};
-
-const counter = {
-  color: "#111827",
-  fontSize: 13,
-  fontWeight: 900
+  padding: "6px 14px",
+  fontSize: 12,
+  fontWeight: 950
 };
 
 const pointsBadge = {
-  background: "#FFFFFF",
-  border: "1px solid #BBD7C0",
-  color: "#111827",
+  background: COLORS.white,
+  border: `1px solid ${COLORS.border}`,
+  color: COLORS.text,
   borderRadius: 10,
   padding: "8px 10px",
   fontSize: 12,
   fontWeight: 950
 };
 
-const progressBar = {
-  height: 6,
-  background: "#D7EADB",
-  borderRadius: 6,
-  overflow: "hidden",
-  marginBottom: 16
-};
-
-const progressFill = {
-  height: "100%",
-  background: "#168A3A",
-  transition: "width .25s"
-};
-
 const questionCard = {
-  background: "#FFFFFF",
-  border: "1px solid #BBD7C0",
-  borderRadius: 20,
-  padding: 20,
-  marginBottom: 14,
+  ...card,
   boxShadow: "0 6px 18px rgba(22,138,58,0.08)"
 };
 
@@ -346,7 +311,7 @@ const questionTopRow = {
 
 const questionTitle = {
   margin: 0,
-  color: "#111827",
+  color: COLORS.text,
   fontSize: 18,
   lineHeight: 1.6,
   fontWeight: 950,
@@ -355,23 +320,20 @@ const questionTitle = {
 };
 
 const translationBtn = {
-  background: "#F4FBF4",
-  border: "1px solid #BBD7C0",
+  background: COLORS.cardSoft,
+  border: `1px solid ${COLORS.border}`,
   borderRadius: 10,
   padding: "7px 14px",
-  color: "#168A3A",
+  color: COLORS.green,
   fontWeight: 900,
   fontFamily: "inherit",
   cursor: "pointer"
 };
 
 const translationBox = {
+  ...softCard,
   marginTop: 12,
-  background: "#F4FBF4",
-  border: "1px solid #D7EADB",
-  borderRadius: 12,
-  padding: 12,
-  color: "#374151",
+  color: COLORS.textSoft,
   fontSize: 13,
   lineHeight: 1.9
 };
@@ -380,7 +342,7 @@ const mediaStyle = {
   width: "100%",
   borderRadius: 14,
   marginTop: 14,
-  border: "1px solid #D7EADB"
+  border: `1px solid ${COLORS.borderSoft}`
 };
 
 const optionsBox = {
@@ -396,7 +358,7 @@ const optionBtn = {
   gap: 12,
   padding: "15px 16px",
   borderRadius: 14,
-  color: "#111827",
+  color: COLORS.text,
   fontFamily: "inherit",
   fontSize: 15,
   fontWeight: 800,
@@ -422,28 +384,9 @@ const optionTranslation = {
   marginTop: 6,
   direction: "rtl",
   textAlign: "right",
-  color: "#64736A",
+  color: COLORS.muted,
   fontSize: 12,
   lineHeight: 1.7
-};
-
-const questionGrid = {
-  display: "grid",
-  gridTemplateColumns: "repeat(10, 1fr)",
-  gap: 6,
-  marginTop: 16,
-  marginBottom: 16
-};
-
-const gridItem = {
-  height: 34,
-  border: "1px solid",
-  borderRadius: 8,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: 12,
-  fontWeight: 950
 };
 
 const actionRow = {
@@ -462,35 +405,16 @@ const markBtn = {
   cursor: "pointer"
 };
 
-const primaryBtn = {
-  background: "#168A3A",
-  border: "none",
+const primaryAction = {
+  ...primaryButton,
   borderRadius: 14,
   padding: "15px 0",
-  color: "#FFFFFF",
-  fontWeight: 950,
-  fontFamily: "inherit",
   fontSize: 15
 };
 
-const lockedCard = {
-  background: "#FFFFFF",
-  border: "1px solid #FCA5A5",
-  borderRadius: 20,
-  padding: 26,
-  textAlign: "center",
-  boxShadow: "0 6px 18px rgba(220,38,38,0.08)"
-};
-
-const lockedTitle = {
-  color: "#DC2626",
-  marginBottom: 10,
-  fontSize: 20,
-  fontWeight: 950
-};
-
-const lockedText = {
-  color: "#64736A",
-  lineHeight: 1.8,
-  marginBottom: 18
+const secondaryAction = {
+  ...secondaryButton,
+  width: "auto",
+  borderRadius: 10,
+  padding: "8px 12px"
 };
