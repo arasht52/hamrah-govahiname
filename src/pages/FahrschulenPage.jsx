@@ -57,4 +57,5 @@ const SCHOOLS = [
     maps: "https://maps.google.com/?q=Fahrschule+Rezai+Eigenstrasse+63+Duisburg",
     languages: ["فارسی", "آلمانی", "انگلیسی"],
     hours: "با هماهنگ قبلی",
-    tags: ["فارسی", "تبدیل گواهینامه", "اتوماتیک و دن
+    tags: ["فارسی", "تبدیل گواهینامه", "اتوماتیک و دنده"],
+
