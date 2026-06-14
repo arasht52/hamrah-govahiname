@@ -81,7 +81,7 @@ export default function App() {
           />
         )}
 
-        {page === "ai" && <AIPage onBack={() => setPage("more")} />}
+        {page === "ai" && <AIPage />}
 
 {page === "laws" && <LawsPage onBack={() => setPage("more")} />}
 
