@@ -38,6 +38,12 @@ const ITEMS = [
   title: "سؤال‌های غلط",
   subtitle: "مرور اشتباهات قبلی"
 },
+{
+  id: "searchQuestions",
+  icon: "🔍",
+  title: "جستجوی سؤال‌ها",
+  subtitle: "پیدا کردن سؤال با کلمه کلیدی"
+},
   {
     id: "settings",
     icon: "⚙️",
