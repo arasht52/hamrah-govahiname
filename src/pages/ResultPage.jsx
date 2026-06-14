@@ -1,7 +1,6 @@
 export default function ResultPage({ result, onRetry, onHome }) {
   const answersList = result?.answersList || [];
   const isExamMode  = result?.isExamMode ?? false;
-
   const total        = answersList.length;
   const correct      = answersList.filter(a => a.correct).length;
   const fehlerpunkte = answersList.reduce((acc, a) => acc + (a.fehlerpunkte || 0), 0);
@@ -17,7 +16,6 @@ export default function ResultPage({ result, onRetry, onHome }) {
         <h2 style={{ color: passed ? "#7EE787" : "#FCA5A5", fontSize: 24, fontWeight: 900, margin: 0 }}>
           {passed ? "Bestanden! قبول شدی" : "Nicht bestanden — دوباره تلاش کن"}
         </h2>
-
         {isExamMode ? (
           <div style={{ marginTop: 20 }}>
             <div style={{ fontSize: 48, fontWeight: 900, color: fehlerpunkte <= 10 ? "#7EE787" : "#EF4444" }}>{fehlerpunkte}</div>
@@ -37,7 +35,6 @@ export default function ResultPage({ result, onRetry, onHome }) {
         )}
       </div>
 
-      {/* مرور سوالات غلط */}
       {answersList.filter(a => !a.correct).length > 0 && (
         <div style={{ background: "#1a2f52", border: "1px solid #1e3a5f", borderRadius: 16, padding: 16, marginBottom: 20 }}>
           <div style={{ fontWeight: 800, fontSize: 14, marginBottom: 12, color: "#FCA5A5" }}>❌ سوالات غلط</div>
