@@ -96,9 +96,9 @@ export default function App() {
 )}
 
 {page === "signs" && <SignsPage onBack={() => setPage("more")} />}
-
+{page === "wrongQuestions" && (<WrongQuestionsPage onBack={() => setPage("more")} />
+)}
 {page === "more" && <MorePage onSelect={(id) => setPage(id)} />}
-
       </main>
 
       <BottomNav
