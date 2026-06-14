@@ -1,124 +1,114 @@
-import { useState, useRef, useEffect } from "react";
-
-const FAQ = [
-  { keys: ["سرعت"], answer: "حداکثر سرعت داخل شهر معمولا ۵۰ کیلومتر است. خارج از شهر ۱۰۰ کیلومتر." },
-  { keys: ["الکل"], answer: "برای رانندگان عادی ۰.۵ پرومیله. برای تازه‌کاران و زیر ۲۱ سال ۰.۰ است." },
-  { keys: ["حق تقدم", "تقاطع"], answer: "در تقاطع بدون تابلو قانون Rechts vor Links اجرا می‌شود — وسیله راست حق تقدم دارد." },
-  { keys: ["تبدیل", "گواهینامه"], answer: "نیاز به Sehtest، Erste Hilfe Kurs، آزمون تئوری و عملی دارید." },
-  { keys: ["تابلو", "علائم"], answer: "مثلث قرمز = هشدار، دایره قرمز = ممنوعیت، دایره آبی = الزام." },
-  { keys: ["جریمه"], answer: "موبایل بدون هندزفری: ۱۰۰ یورو. مبالغ دقیق را از منابع رسمی بررسی کنید." },
-  { keys: ["مدارک"], answer: "گواهینامه، کارت شناسایی، بیمه‌نامه و کارت فنی را همراه داشته باشید." },
-  { keys: ["کمربند"], answer: "کمربند برای همه سرنشینان اجباری است." },
-  { keys: ["موبایل", "هندزفری"], answer: "موبایل بدون هندزفری ممنوع است و ۱۰۰ یورو جریمه دارد." },
-  { keys: ["اتوبان"], answer: "سرعت توصیه‌ای ۱۳۰ کیلومتر است اما الزامی نیست." },
-  { keys: ["میدان"], answer: "در میدان دوار کسی که داخل است اولویت دارد." },
-];
+import { useState } from "react";
+import { COLORS } from "../theme/colors";
 
 const QUICK = [
-  { label: "🪪 تبدیل گواهینامه", q: "تبدیل گواهینامه", a: "نیاز به Sehtest، Erste Hilfe Kurs، آزمون تئوری و عملی دارید." },
-  { label: "🚦 حق تقدم", q: "حق تقدم", a: "طبق Rechts vor Links، وسیله راست حق تقدم دارد. این قانون در ایران وجود ندارد." },
-  { label: "🍺 الکل", q: "الکل", a: "برای رانندگان عادی ۰.۵ پرومیله. برای تازه‌کاران و زیر ۲۱ سال ۰.۰ است." },
-  { label: "🚧 تابلوها", q: "تابلو", a: "مثلث قرمز = هشدار، دایره قرمز = ممنوعیت، دایره آبی = الزام." },
-  { label: "🚓 جریمه‌ها", q: "جریمه", a: "موبایل بدون هندزفری: ۱۰۰ یورو. مبالغ دقیق را از منابع رسمی بررسی کنید." },
-  { label: "📄 مدارک", q: "مدارک", a: "گواهینامه، کارت شناسایی، Versicherung و Fahrzeugschein را همراه داشته باشید." },
+  ["🪪 تبدیل گواهینامه", "برای تبدیل گواهینامه ایرانی چه مراحلی لازم است؟"],
+  ["🚦 حق تقدم", "حق تقدم در تقاطع بدون تابلو چگونه است؟"],
+  ["🍺 الکل", "حد مجاز الکل برای رانندگان چقدر است؟"],
+  ["🚧 تابلوها", "تابلو حق تقدم بده یعنی چه؟"],
+  ["📄 مدارک", "برای شروع گواهینامه چه مدارکی لازم است؟"]
 ];
 
-function getAnswer(text) {
-  const lower = text.toLowerCase();
-  for (const item of FAQ) {
-    if (item.keys.some(k => lower.includes(k))) return item.answer;
-  }
-  return "پاسخ این سؤال در نسخه آزمایشی موجود نیست. در نسخه Pro پاسخ کامل ارائه خواهد شد.";
+function getDemoAnswer(text) {
+  if (text.includes("الکل")) return "برای رانندگان تازه‌کار و زیر ۲۱ سال، حد مجاز ۰.۰ پرومیل است.";
+  if (text.includes("حق تقدم")) return "در تقاطع بدون تابلو، اصل Rechts vor Links اجرا می‌شود؛ یعنی وسیله‌ای که از سمت راست می‌آید حق تقدم دارد.";
+  if (text.includes("تبدیل")) return "معمولاً به Sehtest، Erste Hilfe Kurs، ثبت‌نام در Fahrschule، آزمون تئوری و آزمون عملی نیاز داری.";
+  if (text.includes("تابلو")) return "تابلوی Vorfahrt gewähren یعنی باید حق تقدم را به وسایل نقلیه دیگر بدهی.";
+  if (text.includes("مدارک")) return "معمولاً پاسپورت/کارت اقامت، عکس بیومتریک، Sehtest، گواهی Erste Hilfe و ترجمه/اصل گواهینامه قبلی لازم می‌شود.";
+  return "این پاسخ در نسخه آزمایشی موجود نیست. در نسخه Pro، دستیار هوشمند پاسخ کامل‌تری ارائه می‌دهد.";
 }
 
 export default function AIPage({ onBack }) {
   const [messages, setMessages] = useState([
-    { role: "bot", text: "سلام! من FahrKI هستم. سوالت را بپرس یا از دکمه‌های سریع استفاده کن." }
+    { sender: "ai", text: "سلام، من FahrKI Demo هستم. فعلاً پاسخ‌ها نمونه و آموزشی هستند." }
   ]);
   const [input, setInput] = useState("");
-  const [typing, setTyping] = useState(false);
-  const bottomRef = useRef(null);
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, typing]);
+  function send(text = input) {
+    if (!text.trim()) return;
 
-  const addExchange = (userMsg, botMsg) => {
-    setMessages(prev => [...prev, { role: "user", text: userMsg }]);
-    setTyping(true);
-    setTimeout(() => {
-      setTyping(false);
-      setMessages(prev => [...prev, { role: "bot", text: botMsg }]);
-    }, 800);
-  };
-
-  const handleSend = () => {
-    const text = input.trim();
-    if (!text || typing) return;
+    const userText = text.trim();
+    setMessages((prev) => [
+      ...prev,
+      { sender: "user", text: userText },
+      { sender: "ai", text: getDemoAnswer(userText) }
+    ]);
     setInput("");
-    addExchange(text, getAnswer(text));
-  };
+  }
 
   return (
-    <div style={{ fontFamily: "'Vazirmatn',sans-serif", direction: "rtl", display: "flex", flexDirection: "column", height: "calc(100vh - 140px)" }}>
-
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-        <button onClick={onBack} style={{ background: "transparent", border: "1px solid #1e3a5f", borderRadius: 8, padding: "6px 12px", color: "#8B949E", cursor: "pointer", fontSize: 13, fontFamily: "inherit" }}>
-          ← برگشت
-        </button>
-        <div>
-          <div style={{ fontWeight: 900, fontSize: 16 }}>🤖 FahrKI Assistant</div>
-          <div style={{ fontSize: 11, color: "#8B949E" }}>نسخه آزمایشی</div>
-        </div>
+    <div>
+      <div style={header}>
+        <button onClick={onBack} style={backBtn}>← برگشت</button>
+        <h2 style={title}>🤖 FahrKI Demo</h2>
       </div>
 
-      <div style={{ background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.25)", borderRadius: 12, padding: "10px 14px", marginBottom: 12, fontSize: 12, color: "#FCD34D", lineHeight: 1.7 }}>
-        🚧 Beta — پاسخ‌ها از نمونه‌های داخلی است. اتصال به AI در نسخه بعدی.
+      <div style={betaCard}>
+        🚧 نسخه آزمایشی
+        <br />
+        اتصال زنده به هوش مصنوعی در نسخه بعدی اضافه می‌شود.
       </div>
 
-      <div style={{ display: "flex", gap: 7, overflowX: "auto", paddingBottom: 8, marginBottom: 10, flexShrink: 0 }}>
-        {QUICK.map(btn => (
-          <button key={btn.label} onClick={() => !typing && addExchange(btn.q, btn.a)}
-            style={{ flexShrink: 0, background: "#1a2f52", border: "1px solid #1e3a5f", borderRadius: 20, padding: "7px 13px", fontSize: 12, color: "#8B949E", cursor: "pointer", whiteSpace: "nowrap", fontFamily: "inherit" }}>
-            {btn.label}
+      <div style={quickGrid}>
+        {QUICK.map(([label, text]) => (
+          <button key={label} onClick={() => send(text)} style={quickBtn}>
+            {label}
           </button>
         ))}
       </div>
 
-      <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 12, paddingBottom: 8 }}>
+      <div style={chatBox}>
         {messages.map((m, i) => (
-          <div key={i} style={{ display: "flex", gap: 8, flexDirection: m.role === "user" ? "row-reverse" : "row" }}>
-            <div style={{ width: 30, height: 30, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, background: m.role === "user" ? "rgba(255,149,0,0.2)" : "rgba(96,165,250,0.15)" }}>
-              {m.role === "user" ? "👤" : "🤖"}
-            </div>
-            <div style={{ maxWidth: "82%", background: m.role === "user" ? "rgba(255,149,0,0.12)" : "#1a2f52", border: `1px solid ${m.role === "user" ? "rgba(255,149,0,0.25)" : "#1e3a5f"}`, borderRadius: 14, padding: "10px 14px", fontSize: 13, lineHeight: 1.8, color: "#E6EDF3" }}>
+          <div
+            key={i}
+            style={{
+              display: "flex",
+              justifyContent: m.sender === "user" ? "flex-start" : "flex-end"
+            }}
+          >
+            <div
+              style={{
+                ...bubble,
+                background: m.sender === "user" ? COLORS.green : COLORS.cardSoft,
+                color: m.sender === "user" ? COLORS.white : COLORS.text,
+                border: m.sender === "user" ? "none" : `1px solid ${COLORS.borderSoft}`
+              }}
+            >
               {m.text}
             </div>
           </div>
         ))}
-        {typing && (
-          <div style={{ display: "flex", gap: 8 }}>
-            <div style={{ width: 30, height: 30, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, background: "rgba(96,165,250,0.15)" }}>🤖</div>
-            <div style={{ background: "#1a2f52", border: "1px solid #1e3a5f", borderRadius: 14, padding: "12px 16px", color: "#8B949E", fontSize: 13 }}>
-              FahrKI schreibt...
-            </div>
-          </div>
-        )}
-        <div ref={bottomRef} />
       </div>
 
-      <div style={{ flexShrink: 0, borderTop: "1px solid #1e3a5f", paddingTop: 12 }}>
-        <div style={{ display: "flex", gap: 8 }}>
-          <input value={input} onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && handleSend()}
-            placeholder="سوالت را بنویس..." disabled={typing}
-            style={{ flex: 1, background: "#112240", border: "1px solid #1e3a5f", borderRadius: 10, padding: "11px 14px", fontSize: 14, color: "#E6EDF3", outline: "none", fontFamily: "inherit", direction: "rtl" }} />
-          <button onClick={handleSend} disabled={typing || !input.trim()}
-            style={{ width: 44, height: 44, background: !input.trim() ? "#1a2f52" : "#FF9500", border: "none", borderRadius: 10, cursor: "pointer", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
-            ↑
-          </button>
-        </div>
+      <div style={inputRow}>
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && send()}
+          placeholder="سؤال خود را بنویسید..."
+          style={inputStyle}
+        />
+        <button onClick={() => send()} style={sendBtn}>ارسال</button>
+      </div>
+
+      <div style={proCard}>
+        <strong>⭐ FahrKI Pro</strong>
+        <br />
+        تحلیل تصاویر، ویدئوها، تقاطع‌ها، پاسخ آزاد و تحلیل نقاط ضعف.
       </div>
     </div>
   );
 }
+
+const header = { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 };
+const title = { margin: 0, color: COLORS.text, fontSize: 20, fontWeight: 950 };
+const backBtn = { background: COLORS.white, border: `1px solid ${COLORS.border}`, borderRadius: 12, padding: "9px 12px", color: COLORS.green, fontWeight: 900, fontFamily: "inherit" };
+const betaCard = { background: COLORS.warningSoft, border: `1px solid ${COLORS.warningBorder}`, color: COLORS.warningText, borderRadius: 16, padding: 14, lineHeight: 1.8, marginBottom: 14, fontSize: 13 };
+const quickGrid = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 };
+const quickBtn = { background: COLORS.white, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 12, color: COLORS.green, fontWeight: 900, fontFamily: "inherit" };
+const chatBox = { background: COLORS.white, border: `1px solid ${COLORS.border}`, borderRadius: 18, padding: 14, display: "flex", flexDirection: "column", gap: 10, minHeight: 280, marginBottom: 12 };
+const bubble = { maxWidth: "82%", padding: "10px 14px", borderRadius: 16, fontSize: 13, lineHeight: 1.8, fontWeight: 700 };
+const inputRow = { display: "flex", gap: 8, marginBottom: 14 };
+const inputStyle = { flex: 1, background: COLORS.white, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: "13px 14px", fontFamily: "inherit", outline: "none" };
+const sendBtn = { background: COLORS.green, border: "none", borderRadius: 14, padding: "0 18px", color: COLORS.white, fontWeight: 950, fontFamily: "inherit" };
+const proCard = { background: COLORS.cardSoft, border: `1px solid ${COLORS.border}`, borderRadius: 16, padding: 16, color: COLORS.textSoft, lineHeight: 1.9, fontSize: 13 };
