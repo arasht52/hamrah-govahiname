@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { ALL_QUESTIONS } from "../data/allQuestions";
 import { COLORS } from "../theme/colors";
 import {
-  card,
   page,
   primaryButton,
-  secondaryButton,
-  softCard
+  secondaryButton
 } from "../theme/components";
+
+import QuestionCard from "../components/quiz/QuestionCard";
+import OptionList from "../components/quiz/OptionList";
 
 const EXAM_LIMIT_MS = 45 * 60 * 1000;
 
@@ -89,11 +90,8 @@ export default function ExamQuizPage({ onFinish, onBack }) {
   const q = queue[idx];
   if (!q) return null;
 
-  const questionText = q.q_de || q.q;
-  const questionFa = q.q_fa;
   const options = q.opts_de || q.opts || [];
   const optionsFa = q.opts_fa || [];
-  const hasTranslation = Boolean(questionFa || optionsFa.length);
   const currentMarked = !!marked[q.id];
 
   function finishByTimeout() {
@@ -172,71 +170,20 @@ export default function ExamQuizPage({ onFinish, onBack }) {
         <div style={pointsBadge}>{q.points || 2} Punkte</div>
       </div>
 
-      <div style={questionCard}>
-        <div style={questionTopRow}>
-          <h2 style={questionTitle}>{questionText}</h2>
+      <QuestionCard
+        question={q}
+        showTranslation={showTranslation}
+        setShowTranslation={setShowTranslation}
+      />
 
-          {hasTranslation && (
-            <button
-              onClick={() => setShowTranslation((prev) => !prev)}
-              style={translationBtn}
-            >
-              فارسی
-            </button>
-          )}
-        </div>
-
-        {showTranslation && questionFa && (
-          <div style={translationBox}>{questionFa}</div>
-        )}
-
-        {q.image_url && (
-          <img src={q.image_url} alt="Frage" style={mediaStyle} />
-        )}
-
-        {q.video_url && (
-          <video src={q.video_url} controls style={mediaStyle} />
-        )}
-      </div>
-
-      <div style={optionsBox}>
-        {options.map((option, i) => {
-          const selected = chosenAnswers.includes(i);
-
-          return (
-            <button
-              key={i}
-              onClick={() => toggleAnswer(i)}
-              style={{
-                ...optionBtn,
-                border: selected
-                  ? `2px solid ${COLORS.green}`
-                  : `2px solid ${COLORS.border}`,
-                background: selected ? COLORS.bgSoft : COLORS.white
-              }}
-            >
-              <span
-                style={{
-                  ...checkbox,
-                  background: selected ? COLORS.green : COLORS.white,
-                  borderColor: selected ? COLORS.green : "#9CA3AF",
-                  color: selected ? COLORS.white : "transparent"
-                }}
-              >
-                ✓
-              </span>
-
-              <span style={{ flex: 1 }}>
-                <span>{option}</span>
-
-                {showTranslation && optionsFa[i] && (
-                  <span style={optionTranslation}>{optionsFa[i]}</span>
-                )}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+      <OptionList
+        options={options}
+        optionsFa={optionsFa}
+        chosenAnswers={chosenAnswers}
+        submitted={false}
+        showTranslation={showTranslation}
+        onToggle={toggleAnswer}
+      />
 
       <div style={actionRow}>
         <button
@@ -295,98 +242,6 @@ const pointsBadge = {
   padding: "8px 10px",
   fontSize: 12,
   fontWeight: 950
-};
-
-const questionCard = {
-  ...card,
-  boxShadow: "0 6px 18px rgba(22,138,58,0.08)"
-};
-
-const questionTopRow = {
-  display: "flex",
-  alignItems: "flex-start",
-  justifyContent: "space-between",
-  gap: 12
-};
-
-const questionTitle = {
-  margin: 0,
-  color: COLORS.text,
-  fontSize: 18,
-  lineHeight: 1.6,
-  fontWeight: 950,
-  direction: "ltr",
-  textAlign: "left"
-};
-
-const translationBtn = {
-  background: COLORS.cardSoft,
-  border: `1px solid ${COLORS.border}`,
-  borderRadius: 10,
-  padding: "7px 14px",
-  color: COLORS.green,
-  fontWeight: 900,
-  fontFamily: "inherit",
-  cursor: "pointer"
-};
-
-const translationBox = {
-  ...softCard,
-  marginTop: 12,
-  color: COLORS.textSoft,
-  fontSize: 13,
-  lineHeight: 1.9
-};
-
-const mediaStyle = {
-  width: "100%",
-  borderRadius: 14,
-  marginTop: 14,
-  border: `1px solid ${COLORS.borderSoft}`
-};
-
-const optionsBox = {
-  display: "flex",
-  flexDirection: "column",
-  gap: 10
-};
-
-const optionBtn = {
-  width: "100%",
-  display: "flex",
-  alignItems: "flex-start",
-  gap: 12,
-  padding: "15px 16px",
-  borderRadius: 14,
-  color: COLORS.text,
-  fontFamily: "inherit",
-  fontSize: 15,
-  fontWeight: 800,
-  textAlign: "left",
-  cursor: "pointer",
-  direction: "ltr"
-};
-
-const checkbox = {
-  width: 28,
-  height: 28,
-  borderRadius: 7,
-  border: "2px solid",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontWeight: 950,
-  flexShrink: 0
-};
-
-const optionTranslation = {
-  display: "block",
-  marginTop: 6,
-  direction: "rtl",
-  textAlign: "right",
-  color: COLORS.muted,
-  fontSize: 12,
-  lineHeight: 1.7
 };
 
 const actionRow = {
