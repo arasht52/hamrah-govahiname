@@ -26,6 +26,20 @@ export default function ResultPage({ result, onRetry, onHome }) {
 
   const wrongAnswers = answersList.filter((a) => !a.correct);
   const markedAnswers = answersList.filter((a) => a.marked);
+  useEffect(() => {
+  if (!answersList.length) return;
+
+  saveAttempt({
+    isExamMode,
+    passed,
+    total,
+    correct,
+    wrong,
+    fehlerpunkte,
+    fiveWrong,
+    percent
+  });
+}, []);
 
   return (
     <div>
