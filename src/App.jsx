@@ -96,7 +96,9 @@ export default function App() {
             onBack={() => setPage("quiz")}
           />
         )}
-
+{page === "searchQuestions" && (
+  <SearchQuestionsPage onBack={() => setPage("more")} />
+)}
         {page === "wrongPractice" && (
           <PracticeQuizPage
             customQuestions={wrongPracticeQuestions}
