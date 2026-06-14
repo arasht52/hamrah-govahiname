@@ -16,6 +16,7 @@ import MorePage from "./pages/MorePage";
 import SettingsPage from "./pages/SettingsPage";
 import SignsPage from "./pages/SignsPage";
 import WrongQuestionsPage from "./pages/WrongQuestionsPage";
+import SearchQuestionsPage from "./pages/SearchQuestionsPage";
 
 import { getStats } from "./utils/storage";
 
