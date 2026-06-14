@@ -58,4 +58,40 @@ const SCHOOLS = [
     languages: ["فارسی", "آلمانی", "انگلیسی"],
     hours: "با هماهنگ قبلی",
     tags: ["فارسی", "تبدیل گواهینامه", "اتوماتیک و دنده"],
+    description: "آموزشگاه فارسی‌زبان در دویسبورگ برای تبدیل گواهینامه ایرانی.",
+highlight: "فارسی"
+}
+];
+
+export default function FahrschulenPage() {
+  return (
+    <div
+      style={{
+        background: "#1a2f52",
+        border: "1px solid #1e3a5f",
+        borderRadius: 16,
+        padding: 20
+      }}
+    >
+      <h2>🏫 آموزشگاه‌های رانندگی</h2>
+
+      {FAHRSCHULEN.map((f) => (
+        <div
+          key={f.id}
+          style={{
+            marginTop: 16,
+            padding: 14,
+            border: "1px solid #1e3a5f",
+            borderRadius: 12
+          }}
+        >
+          <h3>{f.nameFA}</h3>
+          <div>{f.address}</div>
+          <div>⭐ {f.rating}</div>
+          <div>{f.phone}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
