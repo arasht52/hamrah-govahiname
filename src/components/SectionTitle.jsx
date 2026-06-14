@@ -5,24 +5,23 @@ export default function SectionTitle({ children }) {
         display: "flex",
         alignItems: "center",
         gap: 8,
-        marginBottom: 12
+        margin: "22px 0 12px"
       }}
     >
       <div
         style={{
-          width: 3,
-          height: 16,
-          background: "#FF9500",
-          borderRadius: 2
+          width: 4,
+          height: 18,
+          background: "#168A3A",
+          borderRadius: 4
         }}
       />
 
       <span
         style={{
           fontSize: 13,
-          fontWeight: 800,
-          color: "#8B949E",
-          letterSpacing: 1
+          fontWeight: 950,
+          color: "#168A3A"
         }}
       >
         {children}
