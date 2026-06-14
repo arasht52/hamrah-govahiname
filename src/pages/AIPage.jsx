@@ -1,5 +1,4 @@
 import { useState } from "react";
-import PageHeader from "../components/PageHeader";
 import { COLORS } from "../theme/colors";
 
 const QUICK = [
@@ -34,7 +33,7 @@ function getDemoAnswer(text) {
   return "این پاسخ در نسخه آزمایشی موجود نیست. در نسخه Pro، دستیار هوشمند پاسخ کامل‌تری ارائه می‌دهد.";
 }
 
-export default function AIPage({ onBack }) {
+export default function AIPage() {
   const [messages, setMessages] = useState([
     {
       sender: "ai",
@@ -60,8 +59,6 @@ export default function AIPage({ onBack }) {
 
   return (
     <div>
-      <PageHeader title="دستیار هوشمند" onBack={onBack} />
-
       <div style={header}>
         <h2 style={title}>🤖 FahrKI Demo</h2>
       </div>
