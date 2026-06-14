@@ -41,13 +41,15 @@ export default function App() {
         )}
 
         {page === "quiz" && (
-          <QuizPage
-            onFinish={(result) => {
-              setQuizResult(result);
-              setPage("result");
-            }}
-          />
-        )}
+  <QuizPage
+    onFinish={(result) => {
+      setQuizResult(result);
+      setPage("result");
+    }}
+    onBack={() => setPage("home")}
+  />
+)}
+
 
         {page === "result" && (
           <ResultPage
