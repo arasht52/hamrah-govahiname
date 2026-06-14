@@ -1,3 +1,4 @@
+import PageHeader from "../components/PageHeader";
 export default function SignsPage({ onBack }) {
   const cardStyle = {
     background: "#fff",
@@ -19,6 +20,10 @@ export default function SignsPage({ onBack }) {
           marginBottom: 20,
           cursor: "pointer"
         }}
+        <PageHeader
+  title="تابلوهای رانندگی"
+  onBack={onBack}
+/>
       >
         ← بازگشت
       </button>
