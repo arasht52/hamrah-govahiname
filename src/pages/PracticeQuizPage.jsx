@@ -19,7 +19,7 @@ function isExactAnswer(chosen, correct) {
 }
 
 export default function PracticeQuizPage({ onFinish, onBack }) {
-  const [queue] = useState(() => selectQuestions(QUESTIONS, 10));
+  const [queue] = useState(() => selectQuestions(ALL_QUESTIONS,10));
   const [idx, setIdx] = useState(0);
   const [chosenAnswers, setChosenAnswers] = useState([]);
   const [submitted, setSubmitted] = useState(false);
