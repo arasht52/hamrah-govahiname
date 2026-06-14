@@ -8,7 +8,10 @@ export default function PageHeader({ title, onBack }) {
           background: "transparent",
           cursor: "pointer",
           fontSize: 16,
-          marginBottom: 12
+          marginBottom: 12,
+          fontFamily: "inherit",
+          color: "#166534",
+          fontWeight: 800
         }}
       >
         ← بازگشت
