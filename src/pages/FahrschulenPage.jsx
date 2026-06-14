@@ -64,6 +64,7 @@ export default function FahrschulenPage({ onBack }) {
               <h3 style={schoolName}>{school.name}</h3>
               <div style={muted}>📍 {school.address}</div>
               <div style={muted}>🌐 {school.languages}</div>
+              <div style={muted}>💬 {school.description}</div>
             </div>
 
             <div style={ratingBox}>
