@@ -1,3 +1,4 @@
+import PageHeader from "../components/PageHeader";
 export default function StatsPage({ onBack }) {
 import { getStats, clearStats } from "../utils/storage";
 import { COLORS } from "../theme/colors";
@@ -17,7 +18,10 @@ export default function StatsPage() {
           خلاصه عملکرد شما در تمرین‌ها و آزمون‌های شبیه‌سازی‌شده.
         </p>
       </div>
-
+<PageHeader
+  title="آمار"
+  onBack={onBack}
+/>
       <div style={grid}>
         <StatCard label="کل تلاش‌ها" value={stats.totalAttempts || 0} />
         <StatCard label="قبولی‌ها" value={stats.passedAttempts || 0} />
