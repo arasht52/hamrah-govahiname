@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import MorePage from "./pages/MorePage";
 import Header from "./components/Header";
 import BottomNav from "./components/BottomNav";
 
@@ -78,7 +79,11 @@ export default function App() {
         )}
 
         {page === "ai" && <AIPage onBack={() => setPage("home")} />}
-
+{page === "more" && (
+  <MorePage
+    onSelect={(id) => setPage(id)}
+  />
+)}
         {page === "laws" && <LawsPage />}
         {page === "stats" && <StatsPage />}
         {page === "fahrschulen" && <FahrschulenPage />}
