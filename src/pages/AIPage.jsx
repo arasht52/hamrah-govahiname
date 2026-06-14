@@ -1,12 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 
-// یک دیتابیس کوچک از پاسخ‌های هوشمند و قانونی آلمان برای حالت آفلاین/پایه
-const AI_KNOWLEDGE_BASE = [
-  { keywords: ["right", "links", "راست", "تقدم", "تقاطع"], response: "قانون Rechts vor Links (راست بر چپ) می‌گوید در تقاطع‌هایی که هیچ تابلو یا چراغ راهنمایی ندارند، حق تقدم همیشه با خودرویی است که از سمت راست شما می‌آید. این قانون در مناطق مسکونی (30er Zone) آلمان بسیار رایج و حیاتی است." },
-  { keywords: ["autobahn", "اتوبان", "سرعت", "بزرگراه"], response: "در اتوبان‌های آلمان، سرعت توصیه شده (Richtgeschwindigkeit) ۱۳۰ کیلومتر بر ساعت است. در بخش‌هایی که تابلوی محدودیت سرعت وجود ندارد، حداکثر سرعت قانونی تعیین نشده، اما در صورت بروز تصادف در سرعت‌های بالای ۱۳۰، مسئولیت سنگینی بر عهده راننده خواهد بود." },
-  { keywords: ["alkohol", "الکل", "مواد", "آبجو"], response: "حد مجاز الکل در خون برای رانندگان عادی در آلمان 0.5 پرومیل است. اما توجه داشته باشید: برای رانندگان زیر ۲۱ سال و کسانی که کمتر از ۲ سال از گرفتن گواهینامه‌شان می‌گذرد (Probezeit)، حد مجاز دقیقاً 0.0 (صفر مطلق) است و جریمه‌های بسیار سنگینی دارد." },
-  { keywords: ["سلام", "درود", "کمک"], response: "سلام! من دستیار هوشمند همراه گواهینامه هستم. می‌توانید درباره قوانین رانندگی در آلمان، تابلوها، سرعت مجاز یا اصطلاحات ترافیکی از من بپرسید تا راهنمایی‌تان کنم." }
-];
+// دریافت کلید از متغیرهای محیطی Vite (باید در فایل .env ریشه پروژه ذخیره شود)
+// نمونه داخل فایل .env: VITE_OPENAI_API_KEY=your_actual_api_key_here
+const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 
 export default function AIPage({ onBack }) {
   const [messages, setMessages] = useState([
@@ -17,12 +13,11 @@ export default function AIPage({ onBack }) {
   
   const chatEndRef = useRef(null);
 
-  // اسکرول خودکار به انتهای چت هنگام آمدن پیام جدید
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!inputValue.trim()) return;
 
     const userText = inputValue.trim();
@@ -31,30 +26,51 @@ export default function AIPage({ onBack }) {
     setInputValue("");
     setIsTyping(true);
 
-    // شبیه‌سازی پاسخ هوش مصنوعی بعد از ۱.۵ ثانیه
-    setTimeout(() => {
-      let aiResponse = "متوجه سوال شما نشدم. در نسخه کامل می‌توانید هر سوالی را بپرسید تا مستقیماً توسط مدل‌های پیشرفته تحلیل شود. در حال حاضر می‌توانید درباره 'سرعت در اتوبان'، 'الکل' یا 'حق تقدم' بپرسید.";
-      
-      // جستجو در پایگاه دانش بر اساس کلمات کلیدی کاربر
-      const lowerText = userText.toLowerCase();
-      for (const item of AI_KNOWLEDGE_BASE) {
-        if (item.keywords.some(keyword => lowerText.includes(keyword))) {
-          aiResponse = item.response;
-          break;
-        }
-      }
+    try {
+      // اتصال مستقیم به API رسمی OpenAI
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${OPENAI_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini", // یک مدل فوق‌العاده سریع، دقیق و بسیار ارزان که ۵ یوروی شما را به این زودی‌ها تمام نمی‌کند
+          messages: [
+            { 
+              role: "system", 
+              content: "تو یک کارشناس خبره و مهربان قوانین راهنمایی و رانندگی آلمان (TÜV/DEKRA) هستی. وظیفه تو راهنمایی متقاضیان ایرانی گواهینامه در آلمان است. تمام پاسخ‌های خود را به زبان فارسی روان، دقیق، خلاصه و کاملاً منطبق بر کتابچه قوانین ترافیکی آلمان ارائه بده. در صورت نیاز از اصطلاحات آلمانی هم استفاده کن." 
+            },
+            ...newMessages.map(msg => ({
+              role: msg.sender === "user" ? "user" : "assistant",
+              content: msg.text
+            }))
+          ],
+          temperature: 0.5
+        })
+      });
+
+      const data = await response.json();
+      const aiResponse = data.choices[0].message.content;
 
       setMessages(prev => [...prev, { id: Date.now() + 1, sender: "ai", text: aiResponse }]);
+    } catch (error) {
+      console.error("OpenAI Error:", error);
+      setMessages(prev => [...prev, { 
+        id: Date.now() + 1, 
+        sender: "ai", 
+        text: "متأسفانه در اتصال به سرور هوش مصنوعی خطایی رخ داد. لطفاً وضعیت اینترنت یا اعتبار کلید API خود را بررسی کنید." 
+      }]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 180px)" }}>
-      {/* هدر بخش هوش مصنوعی */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
         <h3 style={{ fontSize: 16, fontWeight: 850, margin: 0, display: "flex", alignItems: "center", gap: 6 }}>
-          <span>🤖</span> دستیار هوشمند ترافیکی
+          <span>🤖</span> دستیار هوشمند زنده (OpenAI)
         </h3>
         <button onClick={onBack}
           style={{ background: "transparent", border: "1px solid #1e3a5f", borderRadius: 8, padding: "5px 12px", color: "#8B949E", cursor: "pointer", fontSize: 12, fontFamily: "inherit" }}>
@@ -62,7 +78,6 @@ export default function AIPage({ onBack }) {
         </button>
       </div>
 
-      {/* محفظه پیام‌های چت */}
       <div style={{ flex: 1, background: "#112240", border: "1px solid #1e3a5f", borderRadius: 16, padding: 16, overflowY: "auto", display: "flex", flexDirection: "column", gap: 12, marginBottom: 12 }}>
         {messages.map(msg => {
           const isUser = msg.sender === "user";
@@ -85,7 +100,6 @@ export default function AIPage({ onBack }) {
           );
         })}
 
-        {/* انیمیشن وضعیت در حال تایپ هوش مصنوعی */}
         {isTyping && (
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
             <div style={{ background: "#1a2f52", color: "#8B949E", padding: "10px 16px", borderRadius: "16px 16px 16px 0", fontSize: 12, fontWeight: 700 }}>
@@ -96,14 +110,13 @@ export default function AIPage({ onBack }) {
         <div ref={chatEndRef} />
       </div>
 
-      {/* باکس ورودی متن پیام */}
       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
         <input
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
-          placeholder="سوال خود را درباره قوانین آلمان بپرسید..."
+          placeholder="سوال خود را از هوش مصنوعی بپرسید..."
           style={{
             flex: 1,
             background: "#112240",
