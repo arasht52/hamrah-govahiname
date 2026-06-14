@@ -33,6 +33,12 @@ const ITEMS = [
     subtitle: "دسته‌بندی تابلوهای رانندگی"
   },
   {
+  id: "wrongQuestions",
+  icon: "❌",
+  title: "سؤال‌های غلط",
+  subtitle: "مرور اشتباهات قبلی"
+}
+  {
     id: "settings",
     icon: "⚙️",
     title: "تنظیمات",
