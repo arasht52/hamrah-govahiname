@@ -3,9 +3,6 @@ import { useState } from "react";
 import Header from "./components/Header";
 import BottomNav from "./components/BottomNav";
 
-import { getStats } from "./utils/storage";
-import WrongQuestionsPage from "./pages/WrongQuestionsPage";
-import SignsPage from "./pages/SignsPage";
 import HomePage from "./pages/HomePage";
 import QuizPage from "./pages/QuizPage";
 import PracticeQuizPage from "./pages/PracticeQuizPage";
@@ -17,6 +14,10 @@ import FahrschulenPage from "./pages/FahrschulenPage";
 import StatsPage from "./pages/StatsPage";
 import MorePage from "./pages/MorePage";
 import SettingsPage from "./pages/SettingsPage";
+import SignsPage from "./pages/SignsPage";
+import WrongQuestionsPage from "./pages/WrongQuestionsPage";
+
+import { getStats } from "./utils/storage";
 
 const APP_CONTAINER_STYLE = {
   fontFamily: "'Vazirmatn', sans-serif",
@@ -35,10 +36,38 @@ const MAIN_CONTENT_STYLE = {
 export default function App() {
   const [page, setPage] = useState("home");
   const [quizResult, setQuizResult] = useState(null);
+  const [wrongPracticeQuestions, setWrongPracticeQuestions] = useState([]);
 
   const finishQuiz = (result) => {
     setQuizResult(result);
     setPage("result");
+  };
+
+  const startWrongQuestionsPractice = () => {
+    const stats = getStats();
+    const attempts = stats.attempts || [];
+
+    const wrongItems = attempts
+      .flatMap((attempt) => attempt.answersList || [])
+      .filter((item) => !item.correct);
+
+    const questions = [];
+    const seen = new Set();
+
+    wrongItems.forEach((item) => {
+      const q = item.question;
+      if (!q) return;
+
+      const key = q.id || q.q_de || q.q;
+
+      if (!seen.has(key)) {
+        seen.add(key);
+        questions.push(q);
+      }
+    });
+
+    setWrongPracticeQuestions(questions);
+    setPage("wrongPractice");
   };
 
   return (
@@ -54,16 +83,24 @@ export default function App() {
         )}
 
         {page === "quiz" && (
-  <QuizPage
-    onStartPractice={() => setPage("practice")}
-    onStartExam={() => setPage("exam")}
-  />
-)}
+          <QuizPage
+            onStartPractice={() => setPage("practice")}
+            onStartExam={() => setPage("exam")}
+          />
+        )}
 
         {page === "practice" && (
           <PracticeQuizPage
             onFinish={finishQuiz}
             onBack={() => setPage("quiz")}
+          />
+        )}
+
+        {page === "wrongPractice" && (
+          <PracticeQuizPage
+            customQuestions={wrongPracticeQuestions}
+            onFinish={finishQuiz}
+            onBack={() => setPage("wrongQuestions")}
           />
         )}
 
@@ -84,27 +121,44 @@ export default function App() {
 
         {page === "ai" && <AIPage />}
 
-{page === "laws" && <LawsPage onBack={() => setPage("more")} />}
+        {page === "laws" && (
+          <LawsPage onBack={() => setPage("more")} />
+        )}
 
-{page === "fahrschulen" && (
-  <FahrschulenPage onBack={() => setPage("more")} />
-)}
+        {page === "fahrschulen" && (
+          <FahrschulenPage onBack={() => setPage("more")} />
+        )}
 
-{page === "stats" && <StatsPage onBack={() => setPage("more")} />}
+        {page === "stats" && (
+          <StatsPage onBack={() => setPage("more")} />
+        )}
 
-{page === "settings" && (
-  <SettingsPage onBack={() => setPage("more")} />
-)}
+        {page === "wrongQuestions" && (
+          <WrongQuestionsPage
+            onBack={() => setPage("more")}
+            onStartPractice={startWrongQuestionsPractice}
+          />
+        )}
 
-{page === "signs" && <SignsPage onBack={() => setPage("more")} />}
-{page === "wrongQuestions" && (<WrongQuestionsPage onBack={() => setPage("more")} />
-)}
-{page === "more" && <MorePage onSelect={(id) => setPage(id)} />}
+        {page === "settings" && (
+          <SettingsPage onBack={() => setPage("more")} />
+        )}
+
+        {page === "signs" && (
+          <SignsPage onBack={() => setPage("more")} />
+        )}
+
+        {page === "more" && (
+          <MorePage onSelect={(id) => setPage(id)} />
+        )}
       </main>
 
       <BottomNav
         active={
-          page === "practice" || page === "exam" || page === "result"
+          page === "practice" ||
+          page === "wrongPractice" ||
+          page === "exam" ||
+          page === "result"
             ? "quiz"
             : page
         }
