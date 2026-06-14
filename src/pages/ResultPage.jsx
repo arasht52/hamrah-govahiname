@@ -1,5 +1,16 @@
 import { useEffect } from "react";
 import { saveAttempt } from "../utils/storage";
+import { COLORS } from "../theme/colors";
+import {
+  card,
+  dangerButton,
+  page,
+  primaryButton,
+  secondaryButton,
+  sectionTitle,
+  softCard
+} from "../theme/components";
+
 export default function ResultPage({ result, onRetry, onHome }) {
   const answersList = result?.answersList || [];
   const isExamMode = result?.isExamMode ?? false;
@@ -26,38 +37,37 @@ export default function ResultPage({ result, onRetry, onHome }) {
 
   const wrongAnswers = answersList.filter((a) => !a.correct);
   const markedAnswers = answersList.filter((a) => a.marked);
-  useEffect(() => {
-  if (!answersList.length) return;
 
-  saveAttempt({
-    isExamMode,
-    passed,
-    total,
-    correct,
-    wrong,
-    fehlerpunkte,
-    fiveWrong,
-    percent
-  });
-}, []);
+  useEffect(() => {
+    if (!answersList.length) return;
+
+    saveAttempt({
+      isExamMode,
+      passed,
+      total,
+      correct,
+      wrong,
+      fehlerpunkte,
+      fiveWrong,
+      percent
+    });
+  }, []);
 
   return (
-    <div>
+    <div style={page}>
       <div style={summaryCard}>
         <div style={statusIcon}>{passed ? "✅" : "❌"}</div>
 
         <h2
           style={{
             ...statusTitle,
-            color: passed ? "#168A3A" : "#DC2626"
+            color: passed ? COLORS.green : COLORS.danger
           }}
         >
           {passed ? "قبول شدی" : "مردود شدی"}
         </h2>
 
-        <div style={subTitle}>
-          {passed ? "Bestanden" : "Nicht bestanden"}
-        </div>
+        <div style={subTitle}>{passed ? "Bestanden" : "Nicht bestanden"}</div>
 
         {isExamMode ? (
           <div style={scoreBox}>
@@ -82,30 +92,15 @@ export default function ResultPage({ result, onRetry, onHome }) {
         )}
 
         <div style={miniStats}>
-          <div style={miniStat}>
-            <strong>{total}</strong>
-            <span>سؤال</span>
-          </div>
-
-          <div style={miniStat}>
-            <strong>{correct}</strong>
-            <span>درست</span>
-          </div>
-
-          <div style={miniStat}>
-            <strong>{wrong}</strong>
-            <span>غلط</span>
-          </div>
-
-          <div style={miniStat}>
-            <strong>{fiveWrong}</strong>
-            <span>۵ امتیازی غلط</span>
-          </div>
+          <MiniStat value={total} label="سؤال" />
+          <MiniStat value={correct} label="درست" />
+          <MiniStat value={wrong} label="غلط" />
+          <MiniStat value={fiveWrong} label="۵ امتیازی غلط" />
         </div>
       </div>
 
-      <div style={infoCard}>
-        <h3 style={sectionHeading}>ارزیابی آزمون</h3>
+      <div style={card}>
+        <h3 style={sectionTitle}>ارزیابی آزمون</h3>
 
         <div style={ruleLine}>
           <span>حداکثر امتیاز منفی مجاز</span>
@@ -114,7 +109,7 @@ export default function ResultPage({ result, onRetry, onHome }) {
 
         <div style={ruleLine}>
           <span>امتیاز منفی شما</span>
-          <strong style={{ color: passed ? "#168A3A" : "#DC2626" }}>
+          <strong style={{ color: passed ? COLORS.green : COLORS.danger }}>
             {fehlerpunkte}
           </strong>
         </div>
@@ -126,8 +121,8 @@ export default function ResultPage({ result, onRetry, onHome }) {
       </div>
 
       {markedAnswers.length > 0 && (
-        <div style={listCard}>
-          <h3 style={sectionHeading}>🚩 سؤال‌های علامت‌گذاری‌شده</h3>
+        <div style={card}>
+          <h3 style={sectionTitle}>🚩 سؤال‌های علامت‌گذاری‌شده</h3>
 
           {markedAnswers.map((a, index) => (
             <QuestionReview key={`marked-${index}`} item={a} index={index} />
@@ -136,8 +131,8 @@ export default function ResultPage({ result, onRetry, onHome }) {
       )}
 
       {wrongAnswers.length > 0 && (
-        <div style={listCard}>
-          <h3 style={{ ...sectionHeading, color: "#DC2626" }}>
+        <div style={card}>
+          <h3 style={{ ...sectionTitle, color: COLORS.danger }}>
             سؤال‌های اشتباه
           </h3>
 
@@ -148,14 +143,23 @@ export default function ResultPage({ result, onRetry, onHome }) {
       )}
 
       <div style={buttonRow}>
-        <button onClick={onHome} style={secondaryBtn}>
+        <button onClick={onHome} style={secondaryAction}>
           خانه
         </button>
 
-        <button onClick={onRetry} style={primaryBtn}>
+        <button onClick={onRetry} style={primaryAction}>
           آزمون مجدد
         </button>
       </div>
+    </div>
+  );
+}
+
+function MiniStat({ value, label }) {
+  return (
+    <div style={miniStat}>
+      <strong>{value}</strong>
+      <span>{label}</span>
     </div>
   );
 }
@@ -166,7 +170,11 @@ function QuestionReview({ item, index }) {
   const questionFa = q.q_fa;
   const options = q.opts_de || q.opts || [];
   const optionsFa = q.opts_fa || [];
-  const correctAnswers = Array.isArray(q.ok) ? q.ok : q.ok !== undefined ? [q.ok] : [];
+  const correctAnswers = Array.isArray(q.ok)
+    ? q.ok
+    : q.ok !== undefined
+    ? [q.ok]
+    : [];
 
   return (
     <details style={reviewItem}>
@@ -191,24 +199,24 @@ function QuestionReview({ item, index }) {
               style={{
                 ...answerLine,
                 borderColor: isCorrect
-                  ? "#168A3A"
+                  ? COLORS.green
                   : userSelected
-                  ? "#DC2626"
-                  : "#D7EADB",
+                  ? COLORS.danger
+                  : COLORS.borderSoft,
                 background: isCorrect
-                  ? "#E8F6E8"
+                  ? COLORS.bgSoft
                   : userSelected
-                  ? "#FEF2F2"
-                  : "#FFFFFF"
+                  ? COLORS.dangerSoft
+                  : COLORS.white
               }}
             >
               <span
                 style={{
                   ...checkMark,
                   color: isCorrect
-                    ? "#168A3A"
+                    ? COLORS.green
                     : userSelected
-                    ? "#DC2626"
+                    ? COLORS.danger
                     : "transparent"
                 }}
               >
@@ -216,10 +224,7 @@ function QuestionReview({ item, index }) {
               </span>
 
               <div>
-                <div style={{ color: "#111827", fontWeight: 800 }}>
-                  {option}
-                </div>
-
+                <div style={optionText}>{option}</div>
                 {optionsFa[i] && <div style={optionFa}>{optionsFa[i]}</div>}
               </div>
             </div>
@@ -232,9 +237,7 @@ function QuestionReview({ item, index }) {
           {q.exp_fa || q.exp}
 
           {(q.tip_fa || q.tip) && (
-            <div style={{ marginTop: 8 }}>
-              💡 {q.tip_fa || q.tip}
-            </div>
+            <div style={{ marginTop: 8 }}>💡 {q.tip_fa || q.tip}</div>
           )}
         </div>
       )}
@@ -243,11 +246,8 @@ function QuestionReview({ item, index }) {
 }
 
 const summaryCard = {
-  background: "#FFFFFF",
-  border: "1px solid #BBD7C0",
-  borderRadius: 22,
+  ...card,
   padding: 26,
-  marginBottom: 18,
   textAlign: "center",
   boxShadow: "0 8px 24px rgba(22,138,58,0.08)"
 };
@@ -264,44 +264,42 @@ const statusTitle = {
 };
 
 const subTitle = {
-  color: "#64736A",
+  color: COLORS.muted,
   marginTop: 6,
   fontSize: 13,
   fontWeight: 800
 };
 
 const scoreBox = {
+  ...softCard,
   marginTop: 20,
-  background: "#F4FBF4",
-  border: "1px solid #D7EADB",
-  borderRadius: 18,
   padding: 18
 };
 
 const scoreNumber = {
   fontSize: 52,
   fontWeight: 950,
-  color: "#168A3A",
+  color: COLORS.green,
   lineHeight: 1
 };
 
 const scoreLabel = {
   marginTop: 6,
-  color: "#111827",
+  color: COLORS.text,
   fontWeight: 900
 };
 
 const limitText = {
   marginTop: 4,
-  color: "#64736A",
+  color: COLORS.muted,
   fontSize: 12
 };
 
 const dangerBox = {
   marginTop: 14,
-  background: "#FEF2F2",
-  border: "1px solid #FCA5A5",
-  color: "#991B1B",
+  background: COLORS.dangerSoft,
+  border: `1px solid ${COLORS.dangerBorder}`,
+  color: COLORS.danger,
   borderRadius: 12,
   padding: 12,
   fontSize: 12,
@@ -316,61 +314,38 @@ const miniStats = {
 };
 
 const miniStat = {
-  background: "#FFFFFF",
-  border: "1px solid #D7EADB",
+  background: COLORS.white,
+  border: `1px solid ${COLORS.borderSoft}`,
   borderRadius: 12,
   padding: "10px 4px",
   display: "flex",
   flexDirection: "column",
   gap: 3,
-  color: "#64736A",
+  color: COLORS.muted,
   fontSize: 10
-};
-
-const infoCard = {
-  background: "#FFFFFF",
-  border: "1px solid #BBD7C0",
-  borderRadius: 18,
-  padding: 16,
-  marginBottom: 18
-};
-
-const sectionHeading = {
-  margin: "0 0 12px",
-  color: "#168A3A",
-  fontSize: 15,
-  fontWeight: 950
 };
 
 const ruleLine = {
   display: "flex",
   justifyContent: "space-between",
-  borderBottom: "1px solid #E5F2E7",
+  borderBottom: `1px solid ${COLORS.borderSoft}`,
   padding: "10px 0",
-  color: "#374151",
+  color: COLORS.textSoft,
   fontSize: 13
 };
 
-const listCard = {
-  background: "#FFFFFF",
-  border: "1px solid #BBD7C0",
-  borderRadius: 18,
-  padding: 16,
-  marginBottom: 18
-};
-
 const reviewItem = {
-  border: "1px solid #D7EADB",
+  border: `1px solid ${COLORS.borderSoft}`,
   borderRadius: 14,
   marginBottom: 10,
   overflow: "hidden",
-  background: "#FFFFFF"
+  background: COLORS.white
 };
 
 const reviewSummary = {
   cursor: "pointer",
   padding: 14,
-  color: "#111827",
+  color: COLORS.text,
   fontWeight: 900,
   fontSize: 13,
   lineHeight: 1.7,
@@ -381,9 +356,9 @@ const reviewSummary = {
 
 const pointsBadge = {
   flexShrink: 0,
-  background: "#E8F6E8",
-  border: "1px solid #BBD7C0",
-  color: "#168A3A",
+  background: COLORS.bgSoft,
+  border: `1px solid ${COLORS.border}`,
+  color: COLORS.green,
   borderRadius: 8,
   padding: "3px 8px",
   fontSize: 11,
@@ -393,10 +368,10 @@ const pointsBadge = {
 const translationText = {
   margin: "0 14px 12px",
   padding: 12,
-  background: "#F4FBF4",
-  border: "1px solid #D7EADB",
+  background: COLORS.cardSoft,
+  border: `1px solid ${COLORS.borderSoft}`,
   borderRadius: 10,
-  color: "#64736A",
+  color: COLORS.muted,
   lineHeight: 1.8,
   fontSize: 12
 };
@@ -421,8 +396,8 @@ const checkMark = {
   width: 24,
   height: 24,
   borderRadius: 6,
-  background: "#FFFFFF",
-  border: "1px solid #BBD7C0",
+  background: COLORS.white,
+  border: `1px solid ${COLORS.border}`,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -430,20 +405,25 @@ const checkMark = {
   flexShrink: 0
 };
 
+const optionText = {
+  color: COLORS.text,
+  fontWeight: 800
+};
+
 const optionFa = {
   marginTop: 4,
-  color: "#64736A",
+  color: COLORS.muted,
   fontSize: 12,
   lineHeight: 1.6
 };
 
 const explanationBox = {
   margin: "0 14px 14px",
-  background: "#FFF7ED",
-  border: "1px solid #FDBA74",
+  background: COLORS.warningSoft,
+  border: `1px solid ${COLORS.warningBorder}`,
   borderRadius: 12,
   padding: 12,
-  color: "#9A3412",
+  color: COLORS.warningText,
   fontSize: 12,
   lineHeight: 1.8
 };
@@ -454,26 +434,14 @@ const buttonRow = {
   marginBottom: 20
 };
 
-const secondaryBtn = {
+const secondaryAction = {
+  ...secondaryButton,
   flex: 1,
-  background: "#FFFFFF",
-  border: "2px solid #BBD7C0",
-  borderRadius: 14,
-  padding: "14px 0",
-  color: "#168A3A",
-  fontWeight: 900,
-  cursor: "pointer",
-  fontFamily: "inherit"
+  borderRadius: 14
 };
 
-const primaryBtn = {
+const primaryAction = {
+  ...primaryButton,
   flex: 2,
-  background: "#168A3A",
-  border: "none",
-  borderRadius: 14,
-  padding: "14px 0",
-  color: "#FFFFFF",
-  fontWeight: 950,
-  cursor: "pointer",
-  fontFamily: "inherit"
+  borderRadius: 14
 };
