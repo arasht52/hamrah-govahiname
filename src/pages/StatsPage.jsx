@@ -1,6 +1,16 @@
 import PageHeader from "../components/PageHeader";
 import { getStats, clearStats } from "../utils/storage";
 import { COLORS } from "../theme/colors";
+import {
+  badge,
+  card,
+  dangerButton,
+  heroCard,
+  mutedText,
+  page,
+  pageTitle,
+  sectionTitle
+} from "../theme/components";
 
 export default function StatsPage({ onBack }) {
   const stats = getStats();
@@ -8,15 +18,15 @@ export default function StatsPage({ onBack }) {
   const lastAttempt = stats.lastAttempt || attempts[0] || null;
 
   return (
-    <div>
+    <div style={page}>
       <PageHeader title="آمار" onBack={onBack} />
 
-      <div style={hero}>
+      <div style={heroCard}>
         <div style={badge}>📊 Statistik</div>
 
-        <h2 style={title}>آمار و پیشرفت</h2>
+        <h2 style={pageTitle}>آمار و پیشرفت</h2>
 
-        <p style={subtitle}>
+        <p style={mutedText}>
           خلاصه عملکرد شما در تمرین‌ها و آزمون‌های شبیه‌سازی‌شده.
         </p>
       </div>
@@ -65,7 +75,7 @@ export default function StatsPage({ onBack }) {
         />
       </div>
 
-      <div style={listCard}>
+      <div style={card}>
         <h3 style={sectionTitle}>آخرین نتایج</h3>
 
         {attempts.length === 0 ? (
@@ -108,7 +118,7 @@ export default function StatsPage({ onBack }) {
             clearStats();
             window.location.reload();
           }}
-          style={dangerBtn}
+          style={dangerButton}
         >
           پاک کردن آمار
         </button>
@@ -126,47 +136,11 @@ function StatCard({ label, value }) {
   );
 }
 
-const hero = {
-  background: COLORS.white,
-  border: `1px solid ${COLORS.border}`,
-  borderRadius: 22,
-  padding: 20,
-  marginBottom: 16,
-  boxShadow: "0 8px 24px rgba(22,138,58,0.08)"
-};
-
-const badge = {
-  display: "inline-block",
-  background: COLORS.cardSoft,
-  border: `1px solid ${COLORS.borderSoft}`,
-  color: COLORS.green,
-  borderRadius: 18,
-  padding: "5px 12px",
-  fontSize: 12,
-  fontWeight: 950,
-  marginBottom: 12
-};
-
-const title = {
-  margin: "0 0 8px",
-  color: COLORS.text,
-  fontSize: 24,
-  fontWeight: 950
-};
-
-const subtitle = {
-  color: COLORS.muted,
-  lineHeight: 1.9,
-  fontSize: 13,
-  margin: 0
-};
-
 const summaryCard = {
   background: COLORS.white,
   border: `1px solid ${COLORS.border}`,
   borderRadius: 20,
   padding: 18,
-  marginBottom: 16,
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center"
@@ -199,8 +173,7 @@ const summaryDivider = {
 const grid = {
   display: "grid",
   gridTemplateColumns: "1fr 1fr",
-  gap: 10,
-  marginBottom: 16
+  gap: 10
 };
 
 const statCard = {
@@ -222,21 +195,6 @@ const statLabel = {
   fontSize: 12,
   fontWeight: 900,
   marginTop: 4
-};
-
-const listCard = {
-  background: COLORS.white,
-  border: `1px solid ${COLORS.border}`,
-  borderRadius: 18,
-  padding: 16,
-  marginBottom: 16
-};
-
-const sectionTitle = {
-  margin: "0 0 12px",
-  color: COLORS.green,
-  fontSize: 15,
-  fontWeight: 950
 };
 
 const emptyBox = {
@@ -276,16 +234,4 @@ const statusBadge = {
   fontSize: 12,
   fontWeight: 950,
   flexShrink: 0
-};
-
-const dangerBtn = {
-  width: "100%",
-  background: COLORS.dangerSoft,
-  border: `1px solid ${COLORS.dangerBorder}`,
-  color: COLORS.danger,
-  borderRadius: 14,
-  padding: "13px 0",
-  fontWeight: 950,
-  fontFamily: "inherit",
-  cursor: "pointer"
 };
