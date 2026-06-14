@@ -1,4 +1,11 @@
 import { COLORS } from "../theme/colors";
+import {
+  badge,
+  heroCard,
+  mutedText,
+  page,
+  pageTitle
+} from "../theme/components";
 
 const ITEMS = [
   {
@@ -19,7 +26,12 @@ const ITEMS = [
     title: "آموزشگاه‌ها",
     subtitle: "لیست آموزشگاه‌های رانندگی"
   },
-  
+  {
+    id: "signs",
+    icon: "🚦",
+    title: "تابلوها",
+    subtitle: "دسته‌بندی تابلوهای رانندگی"
+  },
   {
     id: "settings",
     icon: "⚙️",
@@ -30,13 +42,13 @@ const ITEMS = [
 
 export default function MorePage({ onSelect }) {
   return (
-    <div>
-      <div style={hero}>
+    <div style={page}>
+      <div style={heroCard}>
         <div style={badge}>Mehr</div>
 
-        <h2 style={title}>بیشتر</h2>
+        <h2 style={pageTitle}>بیشتر</h2>
 
-        <p style={subtitle}>
+        <p style={mutedText}>
           ابزارهای کمکی برای تمرین، مرور و مدیریت برنامه.
         </p>
       </div>
@@ -46,7 +58,7 @@ export default function MorePage({ onSelect }) {
           <button
             key={item.id}
             onClick={() => onSelect(item.id)}
-            style={card}
+            style={menuCard}
           >
             <div style={iconBox}>{item.icon}</div>
 
@@ -63,48 +75,13 @@ export default function MorePage({ onSelect }) {
   );
 }
 
-const hero = {
-  background: COLORS.white,
-  border: `1px solid ${COLORS.border}`,
-  borderRadius: 22,
-  padding: 20,
-  marginBottom: 16,
-  boxShadow: "0 8px 24px rgba(22,138,58,0.08)"
-};
-
-const badge = {
-  display: "inline-block",
-  background: COLORS.cardSoft,
-  border: `1px solid ${COLORS.borderSoft}`,
-  color: COLORS.green,
-  borderRadius: 18,
-  padding: "5px 12px",
-  fontSize: 12,
-  fontWeight: 950,
-  marginBottom: 12
-};
-
-const title = {
-  margin: "0 0 8px",
-  color: COLORS.text,
-  fontSize: 24,
-  fontWeight: 950
-};
-
-const subtitle = {
-  color: COLORS.muted,
-  lineHeight: 1.9,
-  fontSize: 13,
-  margin: 0
-};
-
 const list = {
   display: "flex",
   flexDirection: "column",
   gap: 12
 };
 
-const card = {
+const menuCard = {
   width: "100%",
   background: COLORS.white,
   border: `1px solid ${COLORS.border}`,
