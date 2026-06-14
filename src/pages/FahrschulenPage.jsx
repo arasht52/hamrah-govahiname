@@ -2,7 +2,6 @@ import PageHeader from "../components/PageHeader";
 import { COLORS } from "../theme/colors";
 
 const SCHOOLS = [
-  const SCHOOLS = [
   {
     id: 1,
     city: "Hamburg",
