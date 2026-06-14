@@ -1,4 +1,10 @@
 import { useState } from "react";
+import { COLORS } from "../theme/colors";
+import {
+  page,
+  pageTitle,
+  primaryButton
+} from "../theme/components";
 
 const MODES = [
   {
@@ -23,44 +29,45 @@ export default function QuizPage({ onStartPractice, onStartExam }) {
   const [selected, setSelected] = useState("practice");
 
   return (
-    <div>
-      <div style={topRow}>
-        <h2 style={title}>انتخاب نوع آزمون</h2>
-      </div>
+    <div style={page}>
+      <h2 style={pageTitle}>انتخاب نوع آزمون</h2>
 
       <div style={cards}>
-        {MODES.map((m) => (
-          <button
-            key={m.id}
-            onClick={() => setSelected(m.id)}
-            style={{
-              ...card,
-              border:
-                selected === m.id
-                  ? "2px solid #168A3A"
-                  : "1px solid #D7EADB",
-              background: selected === m.id ? "#F4FBF4" : "#FFFFFF"
-            }}
-          >
-            <div style={icon}>{m.icon}</div>
+        {MODES.map((m) => {
+          const active = selected === m.id;
 
-            <div style={cardTitle}>{m.title}</div>
+          return (
+            <button
+              key={m.id}
+              onClick={() => setSelected(m.id)}
+              style={{
+                ...modeCard,
+                border: active
+                  ? `2px solid ${COLORS.green}`
+                  : `1px solid ${COLORS.borderSoft}`,
+                background: active ? COLORS.cardSoft : COLORS.white
+              }}
+            >
+              <div style={icon}>{m.icon}</div>
 
-            <div style={germanLabel}>{m.german}</div>
+              <div style={cardTitle}>{m.title}</div>
 
-            <div style={cardSub}>{m.sub}</div>
+              <div style={germanLabel}>{m.german}</div>
 
-            <div style={cardDesc}>{m.desc}</div>
-          </button>
-        ))}
+              <div style={cardSub}>{m.sub}</div>
+
+              <div style={cardDesc}>{m.desc}</div>
+            </button>
+          );
+        })}
       </div>
 
       {selected === "practice" ? (
-        <button onClick={onStartPractice} style={primaryBtn}>
+        <button onClick={onStartPractice} style={primaryButton}>
           شروع تمرین آموزشی
         </button>
       ) : (
-        <button onClick={onStartExam} style={examBtn}>
+        <button onClick={onStartExam} style={examButton}>
           شروع آزمون رسمی
         </button>
       )}
@@ -68,25 +75,13 @@ export default function QuizPage({ onStartPractice, onStartExam }) {
   );
 }
 
-const topRow = {
-  marginBottom: 20
-};
-
-const title = {
-  margin: 0,
-  color: "#111827",
-  fontWeight: 950,
-  fontSize: 20
-};
-
 const cards = {
   display: "flex",
   flexDirection: "column",
-  gap: 14,
-  marginBottom: 20
+  gap: 14
 };
 
-const card = {
+const modeCard = {
   textAlign: "right",
   borderRadius: 20,
   padding: 20,
@@ -100,14 +95,14 @@ const icon = {
 };
 
 const cardTitle = {
-  color: "#111827",
+  color: COLORS.text,
   fontSize: 18,
   fontWeight: 950,
   marginBottom: 4
 };
 
 const germanLabel = {
-  color: "#168A3A",
+  color: COLORS.green,
   fontWeight: 950,
   fontSize: 13,
   marginBottom: 8,
@@ -116,40 +111,19 @@ const germanLabel = {
 };
 
 const cardSub = {
-  color: "#374151",
+  color: COLORS.textSoft,
   fontWeight: 900,
   fontSize: 13,
   marginBottom: 10
 };
 
 const cardDesc = {
-  color: "#64736A",
+  color: COLORS.muted,
   lineHeight: 1.8,
   fontSize: 13
 };
 
-const primaryBtn = {
-  width: "100%",
-  background: "#168A3A",
-  border: "none",
-  borderRadius: 16,
-  padding: "16px 0",
-  color: "#FFFFFF",
-  fontWeight: 950,
-  fontSize: 15,
-  fontFamily: "inherit",
-  cursor: "pointer"
-};
-
-const examBtn = {
-  width: "100%",
-  background: "#111827",
-  border: "none",
-  borderRadius: 16,
-  padding: "16px 0",
-  color: "#FFFFFF",
-  fontWeight: 950,
-  fontSize: 15,
-  fontFamily: "inherit",
-  cursor: "pointer"
+const examButton = {
+  ...primaryButton,
+  background: COLORS.text
 };
