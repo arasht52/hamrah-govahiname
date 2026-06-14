@@ -40,8 +40,19 @@ function buildAnswerRecord(question, chosenAnswers, correctAnswers) {
   };
 }
 
-export default function PracticeQuizPage({ onFinish, onBack }) {
-  const [queue] = useState(() => selectQuestions(ALL_QUESTIONS, 10));
+export default function PracticeQuizPage({
+  onFinish,
+  onBack,
+  customQuestions = null
+}) {
+  const [queue] = useState(() => {
+    if (customQuestions && customQuestions.length > 0) {
+      return customQuestions;
+    }
+
+    return selectQuestions(ALL_QUESTIONS, 10);
+  });
+
   const [idx, setIdx] = useState(0);
   const [chosenAnswers, setChosenAnswers] = useState([]);
   const [submitted, setSubmitted] = useState(false);
@@ -56,6 +67,7 @@ export default function PracticeQuizPage({ onFinish, onBack }) {
   const correctAnswers = normalizeOk(q.ok);
   const progress = ((idx + 1) / queue.length) * 100;
   const answerIsCorrect = isExactAnswer(chosenAnswers, correctAnswers);
+  const isWrongPractice = customQuestions && customQuestions.length > 0;
 
   function toggleAnswer(optionIndex) {
     if (submitted) return;
@@ -100,7 +112,10 @@ export default function PracticeQuizPage({ onFinish, onBack }) {
         </button>
 
         <div style={topInfo}>
-          <div style={modeBadge}>تمرین آموزشی</div>
+          <div style={modeBadge}>
+            {isWrongPractice ? "تمرین سؤال‌های غلط" : "تمرین آموزشی"}
+          </div>
+
           <div style={counter}>
             سؤال {idx + 1} از {queue.length}
           </div>
