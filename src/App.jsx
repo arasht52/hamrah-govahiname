@@ -1,10 +1,8 @@
 import { useState } from "react";
 
-import MorePage from "./pages/MorePage";
 import Header from "./components/Header";
 import BottomNav from "./components/BottomNav";
 
-import StatsPage from "./pages/StatsPage";
 import HomePage from "./pages/HomePage";
 import QuizPage from "./pages/QuizPage";
 import PracticeQuizPage from "./pages/PracticeQuizPage";
@@ -13,6 +11,8 @@ import ResultPage from "./pages/ResultPage";
 import AIPage from "./pages/AIPage";
 import LawsPage from "./pages/LawsPage";
 import FahrschulenPage from "./pages/FahrschulenPage";
+import StatsPage from "./pages/StatsPage";
+import MorePage from "./pages/MorePage";
 
 const APP_CONTAINER_STYLE = {
   fontFamily: "'Vazirmatn', sans-serif",
@@ -48,6 +48,7 @@ export default function App() {
             onOpenAI={() => setPage("ai")}
           />
         )}
+
         {page === "quiz" && (
           <QuizPage
             onStartPractice={() => setPage("practice")}
@@ -79,18 +80,22 @@ export default function App() {
         )}
 
         {page === "ai" && <AIPage onBack={() => setPage("home")} />}
-{page === "more" && (
-  <MorePage
-    onSelect={(id) => setPage(id)}
-  />
-)}
+
         {page === "laws" && <LawsPage />}
-        {page === "stats" && <StatsPage />}
+
         {page === "fahrschulen" && <FahrschulenPage />}
+
+        {page === "stats" && <StatsPage />}
+
+        {page === "more" && <MorePage onSelect={(id) => setPage(id)} />}
       </main>
 
       <BottomNav
-        active={page === "practice" || page === "exam" ? "quiz" : page}
+        active={
+          page === "practice" || page === "exam" || page === "result"
+            ? "quiz"
+            : page
+        }
         onSelect={setPage}
       />
     </div>
