@@ -43,15 +43,16 @@ export default function ResultPage({ result, onRetry, onHome }) {
     if (!answersList.length) return;
 
     saveAttempt({
-      isExamMode,
-      passed,
-      total,
-      correct,
-      wrong,
-      fehlerpunkte,
-      fiveWrong,
-      percent
-    });
+     isExamMode,
+     passed,
+     total,
+     correct,
+     wrong,
+     fehlerpunkte,
+     fiveWrong,
+     percent,
+     answersList
+  });
   }, []);
 
   return (
