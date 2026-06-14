@@ -4,24 +4,22 @@ const MODES = [
   {
     id: "practice",
     icon: "📚",
-    title: "Lernmodus",
+    title: "تمرین آموزشی",
+    german: "Lernmodus",
     sub: "۱۰ سؤال آموزشی",
-    desc: "نمایش جواب صحیح، توضیح فارسی و دکمه Weiter"
+    desc: "بعد از ثبت پاسخ، جواب درست و غلط با رنگ مشخص می‌شود و توضیح فارسی نمایش داده می‌شود."
   },
   {
     id: "exam",
     icon: "📝",
-    title: "Prüfungssimulation",
+    title: "شبیه‌ساز آزمون رسمی",
+    german: "Prüfungssimulation",
     sub: "۳۰ سؤال آزمون",
-    desc: "شبیه‌سازی آزمون واقعی TÜV / DEKRA"
+    desc: "فضای آزمون واقعی TÜV / DEKRA؛ بدون نمایش جواب تا پایان آزمون."
   }
 ];
 
-export default function QuizPage({
-  onStartPractice,
-  onStartExam,
-  onBack
-}) {
+export default function QuizPage({ onStartPractice, onStartExam, onBack }) {
   const [selected, setSelected] = useState("practice");
 
   return (
@@ -31,9 +29,7 @@ export default function QuizPage({
           ← خانه
         </button>
 
-        <h2 style={title}>
-          Modus auswählen
-        </h2>
+        <h2 style={title}>انتخاب نوع آزمون</h2>
       </div>
 
       <div style={cards}>
@@ -47,42 +43,29 @@ export default function QuizPage({
                 selected === m.id
                   ? "2px solid #168A3A"
                   : "1px solid #D7EADB",
-              background:
-                selected === m.id
-                  ? "#F4FBF4"
-                  : "#FFFFFF"
+              background: selected === m.id ? "#F4FBF4" : "#FFFFFF"
             }}
           >
             <div style={icon}>{m.icon}</div>
 
-            <div style={cardTitle}>
-              {m.title}
-            </div>
+            <div style={cardTitle}>{m.title}</div>
 
-            <div style={cardSub}>
-              {m.sub}
-            </div>
+            <div style={germanLabel}>{m.german}</div>
 
-            <div style={cardDesc}>
-              {m.desc}
-            </div>
+            <div style={cardSub}>{m.sub}</div>
+
+            <div style={cardDesc}>{m.desc}</div>
           </button>
         ))}
       </div>
 
       {selected === "practice" ? (
-        <button
-          onClick={onStartPractice}
-          style={primaryBtn}
-        >
-          Lernmodus starten
+        <button onClick={onStartPractice} style={primaryBtn}>
+          شروع تمرین آموزشی
         </button>
       ) : (
-        <button
-          onClick={onStartExam}
-          style={examBtn}
-        >
-          Prüfung starten
+        <button onClick={onStartExam} style={examBtn}>
+          شروع آزمون رسمی
         </button>
       )}
     </div>
@@ -141,8 +124,17 @@ const cardTitle = {
   marginBottom: 4
 };
 
-const cardSub = {
+const germanLabel = {
   color: "#168A3A",
+  fontWeight: 950,
+  fontSize: 13,
+  marginBottom: 8,
+  direction: "ltr",
+  textAlign: "right"
+};
+
+const cardSub = {
+  color: "#374151",
   fontWeight: 900,
   fontSize: 13,
   marginBottom: 10
