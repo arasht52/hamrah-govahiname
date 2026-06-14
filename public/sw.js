@@ -1,17 +1,17 @@
-const CACHE_NAME = "hamrah-govahiname-v1";
-const ASSETS = [
-  "/hamrah-govahiname/",
-  "/hamrah-govahiname/index.html",
-];
+const CACHE_NAME = "hamrah-govahiname-v2";
 
-self.addEventListener("install", (e) => {
+self.addEventListener("install", () => {
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", (e) => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    caches.keys().then(keys =>
+      Promise.all(keys.map(key => caches.delete(key)))
+    )
   );
 });
 
 self.addEventListener("fetch", (e) => {
-  e.respondWith(
-    caches.match(e.request).then((res) => res || fetch(e.request))
-  );
+  e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
 });
