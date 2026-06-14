@@ -3,6 +3,7 @@ import { useState } from "react";
 import Header from "./components/Header";
 import BottomNav from "./components/BottomNav";
 
+import WrongQuestionsPage from "./pages/WrongQuestionsPage";
 import SignsPage from "./pages/SignsPage";
 import HomePage from "./pages/HomePage";
 import QuizPage from "./pages/QuizPage";
