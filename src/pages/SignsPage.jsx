@@ -10,9 +10,24 @@ const CATEGORIES = [
     german: "Gefahrzeichen",
     color: "#F59E0B",
     signs: [
-      { name: "خطر عمومی", german: "Gefahrstelle", desc: "باید سرعت را کم کنی و آماده واکنش باشی." },
-      { name: "پیچ خطرناک", german: "Kurve", desc: "قبل از پیچ سرعت را کاهش بده." },
-      { name: "عبور عابر پیاده", german: "Fußgänger", desc: "احتمال حضور عابر در مسیر وجود دارد." }
+      {
+        icon: "⚠️",
+        name: "خطر عمومی",
+        german: "Gefahrstelle",
+        desc: "باید سرعت را کم کنی و آماده واکنش باشی."
+      },
+      {
+        icon: "↩️",
+        name: "پیچ خطرناک",
+        german: "Kurve",
+        desc: "قبل از پیچ سرعت را کاهش بده."
+      },
+      {
+        icon: "🚶",
+        name: "عبور عابر پیاده",
+        german: "Fußgänger",
+        desc: "احتمال حضور عابر در مسیر وجود دارد."
+      }
     ]
   },
   {
@@ -22,9 +37,24 @@ const CATEGORIES = [
     german: "Verbotszeichen",
     color: "#DC2626",
     signs: [
-      { name: "ورود ممنوع", german: "Verbot der Einfahrt", desc: "نباید وارد این مسیر شوی." },
-      { name: "سبقت ممنوع", german: "Überholverbot", desc: "سبقت گرفتن در این محدوده ممنوع است." },
-      { name: "توقف ممنوع", german: "Halteverbot", desc: "حتی توقف کوتاه هم مجاز نیست." }
+      {
+        icon: "⛔",
+        name: "ورود ممنوع",
+        german: "Verbot der Einfahrt",
+        desc: "نباید وارد این مسیر شوی."
+      },
+      {
+        icon: "🚫",
+        name: "سبقت ممنوع",
+        german: "Überholverbot",
+        desc: "سبقت گرفتن در این محدوده ممنوع است."
+      },
+      {
+        icon: "🅿️",
+        name: "توقف ممنوع",
+        german: "Halteverbot",
+        desc: "حتی توقف کوتاه هم مجاز نیست."
+      }
     ]
   },
   {
@@ -34,9 +64,24 @@ const CATEGORIES = [
     german: "Vorschriftzeichen",
     color: "#2563EB",
     signs: [
-      { name: "مسیر اجباری مستقیم", german: "Vorgeschriebene Fahrtrichtung", desc: "فقط باید در جهت مشخص‌شده حرکت کنی." },
-      { name: "مسیر دوچرخه", german: "Radweg", desc: "این مسیر مخصوص دوچرخه است." },
-      { name: "حداقل سرعت", german: "Mindestgeschwindigkeit", desc: "نباید کمتر از سرعت مشخص‌شده حرکت کنی." }
+      {
+        icon: "⬆️",
+        name: "مسیر اجباری مستقیم",
+        german: "Vorgeschriebene Fahrtrichtung",
+        desc: "فقط باید در جهت مشخص‌شده حرکت کنی."
+      },
+      {
+        icon: "🚲",
+        name: "مسیر دوچرخه",
+        german: "Radweg",
+        desc: "این مسیر مخصوص دوچرخه است."
+      },
+      {
+        icon: "🔢",
+        name: "حداقل سرعت",
+        german: "Mindestgeschwindigkeit",
+        desc: "نباید کمتر از سرعت مشخص‌شده حرکت کنی."
+      }
     ]
   },
   {
@@ -46,9 +91,24 @@ const CATEGORIES = [
     german: "Richtzeichen",
     color: "#168A3A",
     signs: [
-      { name: "پارکینگ", german: "Parkplatz", desc: "محل مجاز برای پارک خودرو." },
-      { name: "بزرگراه", german: "Autobahn", desc: "شروع محدوده بزرگراه." },
-      { name: "بن‌بست", german: "Sackgasse", desc: "مسیر خروجی ندارد." }
+      {
+        icon: "🅿️",
+        name: "پارکینگ",
+        german: "Parkplatz",
+        desc: "محل مجاز برای پارک خودرو."
+      },
+      {
+        icon: "🛣️",
+        name: "بزرگراه",
+        german: "Autobahn",
+        desc: "شروع محدوده بزرگراه."
+      },
+      {
+        icon: "🚧",
+        name: "بن‌بست",
+        german: "Sackgasse",
+        desc: "مسیر خروجی ندارد."
+      }
     ]
   }
 ];
@@ -90,14 +150,19 @@ export default function SignsPage({ onBack }) {
 
       {category.signs.map((sign) => (
         <div key={sign.german} style={card}>
-          <div style={signName}>{sign.name}</div>
-          <div style={signGerman}>{sign.german}</div>
-          <p style={desc}>{sign.desc}</p>
+          <div style={smallIcon}>{sign.icon}</div>
+
+          <div>
+            <div style={signName}>{sign.name}</div>
+            <div style={signGerman}>{sign.german}</div>
+            <p style={desc}>{sign.desc}</p>
+          </div>
         </div>
       ))}
 
       <div style={note}>
-        فعلاً این بخش آموزشی و نمونه‌ای است. تصاویر واقعی و استاندارد تابلوها در مرحله بعد اضافه می‌شود.
+        فعلاً این بخش آموزشی و نمونه‌ای است. تصاویر واقعی و استاندارد تابلوها در
+        مرحله بعد اضافه می‌شود.
       </div>
     </div>
   );
@@ -157,11 +222,27 @@ const german = {
 };
 
 const card = {
+  display: "flex",
+  gap: 12,
+  alignItems: "flex-start",
   background: COLORS.white,
   border: `1px solid ${COLORS.border}`,
   borderRadius: 18,
   padding: 16,
   marginBottom: 12
+};
+
+const smallIcon = {
+  width: 44,
+  height: 44,
+  borderRadius: 14,
+  background: COLORS.cardSoft,
+  border: `1px solid ${COLORS.borderSoft}`,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: 24,
+  flexShrink: 0
 };
 
 const signName = {
