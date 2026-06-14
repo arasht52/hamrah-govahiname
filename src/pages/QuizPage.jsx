@@ -1,602 +1,281 @@
-
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { QUESTIONS } from "../data/questions";
 
-const LETTERS = ["الف", "ب", "پ", "ت"];
-
 const TOPIC_INFO = {
-  Vorfahrt: { label: "حق تقدم", icon: "🚦" },
-  Geschwindigkeit: { label: "سرعت", icon: "⚡" },
-  Sicherheit: { label: "ایمنی", icon: "🛡️" },
-  Verkehrszeichen: { label: "علائم", icon: "🔵" },
-  Alkohol: { label: "الکل و مواد", icon: "🍺" }
+ Vorfahrt:        { label: "حق تقدم",     icon: "🚦" },
+ Geschwindigkeit: { label: "سرعت",         icon: "⚡" },
+ Sicherheit:      { label: "ایمنی",        icon: "🛡️" },
+ Verkehrszeichen: { label: "علائم",        icon: "🔵" },
+ Alkohol:         { label: "الکل و مواد", icon: "🍺" },
 };
 
 const MODES = [
-  { id: "all", icon: "🎯", label: "همه موضوعات", sub: "آزمون ترکیبی" },
-  { id: "Vorfahrt", icon: "🚦", label: "حق تقدم", sub: "Rechts vor Links" },
-  { id: "Geschwindigkeit", icon: "⚡", label: "سرعت", sub: "محدودیت‌های سرعت" },
-  { id: "Verkehrszeichen", icon: "🔵", label: "علائم", sub: "تابلوهای ترافیکی" },
-  { id: "Sicherheit", icon: "🛡️", label: "ایمنی", sub: "کمک‌های اولیه" },
-  { id: "Alkohol", icon: "🍺", label: "الکل", sub: "حدود مجاز" }
+ { id: "all",             icon: "🎯", label: "همه موضوعات",   sub: "Gemischte Prüfung" },
+ { id: "Vorfahrt",        icon: "🚦", label: "حق تقدم",       sub: "Vorfahrt & Vorrang" },
+ { id: "Geschwindigkeit", icon: "⚡", label: "سرعت",          sub: "Geschwindigkeit" },
+ { id: "Verkehrszeichen", icon: "🔵", label: "علائم",         sub: "Verkehrszeichen" },
+ { id: "Sicherheit",      icon: "🛡️", label: "ایمنی",        sub: "Sicherheit" },
+ { id: "Alkohol",         icon: "🍺", label: "الکل",          sub: "Alkohol & Drogen" },
 ];
 
+const EXAM_DURATION_MS = 45 * 60 * 1000;
+
 function selectQuestions(pool, count) {
-  const shuffled = [...pool].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, Math.min(count, shuffled.length));
+ return [...pool].sort(() => Math.random() - 0.5).slice(0, Math.min(count, pool.length));
 }
 
-function normalizeOk(ok) {
-  return Array.isArray(ok) ? ok : [ok];
-}
-
-function arraysEqualAsSet(a, b) {
-  if (a.length !== b.length) return false;
-  return a.every((x) => b.includes(x));
+function isAnswerCorrect(chosen, correctAnswers) {
+ if (chosen.length !== correctAnswers.length) return false;
+ return correctAnswers.every(v => chosen.includes(v)) && chosen.every(v => correctAnswers.includes(v));
 }
 
 export default function QuizPage({ onFinish, onBack }) {
-  const [mode, setMode] = useState("all");
-  const [phase, setPhase] = useState("select");
-  const [queue, setQueue] = useState([]);
-  const [idx, setIdx] = useState(0);
-  const [examMode, setExamMode] = useState(false);
-  const [chosenAnswers, setChosenAnswers] = useState([]);
-  const [submitted, setSubmitted] = useState(false);
-  const [answersList, setAnswersList] = useState([]);
-  const [marked, setMarked] = useState({});
+ const [mode, setMode]            = useState("all");
+ const [phase, setPhase]          = useState("select");
+ const [queue, setQueue]          = useState([]);
+ const [idx, setIdx]              = useState(0);
+ const [answered, setAnswered]    = useState(false);
+ const [chosenAnswers, setChosen] = useState([]);
+ const [answers, setAnswers]      = useState([]);
+ const [examMode, setExamMode]    = useState(false);
+ const [marked, setMarked]        = useState({});
+ const [showFa, setShowFa]        = useState(false);
+ const [timeExpired, setTimeExpired] = useState(false);
+ const startTimeRef = useRef(null);
+ const timerRef     = useRef(null);
 
-  function start(selectedMode, isExam) {
-    const pool =
-      selectedMode === "all"
-        ? QUESTIONS
-        : QUESTIONS.filter((q) => q.topic === selectedMode);
+ useEffect(() => {
+   return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+ }, []);
 
-    const count = isExam ? 30 : 10;
-    const selectedQuestions = selectQuestions(pool, count);
+ const startExamTimer = () => {
+   startTimeRef.current = Date.now();
+   timerRef.current = setTimeout(() => {
+     setTimeExpired(true);
+   }, EXAM_DURATION_MS);
+ };
 
-    setQueue(selectedQuestions);
-    setIdx(0);
-    setExamMode(isExam);
-    setChosenAnswers([]);
-    setSubmitted(false);
-    setAnswersList([]);
-    setMarked({});
-    setPhase("active");
-  }
+ const start = (selectedMode, isExam) => {
+   if (timerRef.current) clearTimeout(timerRef.current);
+   const pool = selectedMode === "all" ? QUESTIONS : QUESTIONS.filter(q => q.topic === selectedMode);
+   setQueue(selectQuestions(pool, isExam ? 30 : 10));
+   setIdx(0); setAnswers([]); setAnswered(false); setChosen([]);
+   setMarked({}); setShowFa(false); setTimeExpired(false);
+   setExamMode(isExam);
+   setPhase("active");
+   if (isExam) startExamTimer();
+ };
 
-  function toggleAnswer(optionIndex) {
-    if (submitted) return;
+ const resetToSelect = () => {
+   if (timerRef.current) clearTimeout(timerRef.current);
+   setPhase("select"); setQueue([]); setIdx(0); setAnswers([]);
+   setAnswered(false); setChosen([]); setMarked({});
+   setShowFa(false); setTimeExpired(false); setExamMode(false);
+ };
 
-    setChosenAnswers((prev) =>
-      prev.includes(optionIndex)
-        ? prev.filter((x) => x !== optionIndex)
-        : [...prev, optionIndex]
-    );
-  }
+ const toggleOption = (i) => {
+   if (answered || timeExpired) return;
+   setChosen(prev => prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i]);
+ };
 
-  function checkCurrentAnswer(question, chosen) {
-    const correctAnswers = normalizeOk(question.ok);
-    return arraysEqualAsSet(chosen, correctAnswers);
-  }
+ const submitAnswer = () => {
+   if (chosenAnswers.length === 0 || timeExpired) return;
+   setAnswered(true);
+ };
 
-  function buildAnswerRecord() {
-    const currentQuestion = queue[idx];
-    const isCorrect = checkCurrentAnswer(currentQuestion, chosenAnswers);
+ const next = () => {
+   const q = queue[idx];
+   const correctAnswers = Array.isArray(q.ok) ? q.ok : [q.ok];
+   const correct = isAnswerCorrect(chosenAnswers, correctAnswers);
+   const updated = [...answers, {
+     question: q,
+     correct,
+     chosenAnswers,
+     fehlerpunkte: correct ? 0 : (q.points || 2),
+   }];
+   setAnswers(updated);
+   if (idx + 1 >= queue.length) {
+     if (timerRef.current) clearTimeout(timerRef.current);
+     onFinish({ answersList: updated, isExamMode: examMode });
+     return;
+   }
+   setIdx(i => i + 1);
+   setAnswered(false);
+   setChosen([]);
+   setShowFa(false);
+ };
 
-    return {
-      question: currentQuestion,
-      correct: isCorrect,
-      chosenAnswers: [...chosenAnswers],
-      fehlerpunkte: isCorrect ? 0 : currentQuestion.points || 2
-    };
-  }
+ // ── صفحه انتخاب موضوع ──
+ if (phase === "select") {
+   return (
+     <div>
+       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+         <button onClick={onBack}
+           style={{ background: "transparent", border: "1px solid #1e3a5f", borderRadius: 8, padding: "6px 12px", color: "#8B949E", cursor: "pointer", fontSize: 13, fontFamily: "inherit" }}>
+           ← برگشت
+         </button>
+         <h2 style={{ fontSize: 17, fontWeight: 800, margin: 0 }}>Thema auswählen</h2>
+       </div>
 
-  function submitAnswer() {
-    if (chosenAnswers.length === 0) return;
-    setSubmitted(true);
-  }
+       <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 10, marginBottom: 16 }}>
+         {MODES.map(m => (
+           <button key={m.id} onClick={() => setMode(m.id)}
+             style={{ textAlign: "right", padding: 14, borderRadius: 16, border: `2px solid ${mode === m.id ? "#FF9500" : "#1e3a5f"}`, background: mode === m.id ? "rgba(255,149,0,0.1)" : "#1a2f52", cursor: "pointer", fontFamily: "inherit" }}>
+             <div style={{ fontSize: 22, marginBottom: 4 }}>{m.icon}</div>
+             <div style={{ fontWeight: 700, fontSize: 13, color: "#E6EDF3", marginBottom: 2 }}>{m.label}</div>
+             <div style={{ fontSize: 11, color: "#8B949E" }}>{m.sub}</div>
+           </button>
+         ))}
+       </div>
 
-  function nextQuestion() {
-    const record = buildAnswerRecord();
-    const updated = [...answersList, record];
+       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+         <button onClick={() => start(mode, false)}
+           style={{ background: "#FF9500", border: "none", borderRadius: 12, padding: "14px 0", fontSize: 14, fontWeight: 800, color: "#0A2540", cursor: "pointer", fontFamily: "inherit" }}>
+           📝 Lernmodus<br />
+           <span style={{ fontSize: 11, fontWeight: 600 }}>10 Fragen</span>
+         </button>
+         <button onClick={() => start(mode, true)}
+           style={{ background: "#1a2f52", border: "2px solid #FF9500", borderRadius: 12, padding: "14px 0", fontSize: 14, fontWeight: 800, color: "#FFB340", cursor: "pointer", fontFamily: "inherit" }}>
+           🎓 Prüfungsmodus<br />
+           <span style={{ fontSize: 11, fontWeight: 600 }}>30 Fragen · 45 Min</span>
+         </button>
+       </div>
+     </div>
+   );
+ }
 
-    setAnswersList(updated);
+ // ── صفحه سوال ──
+ const q = queue[idx];
+ if (!q) return null;
 
-    if (idx + 1 >= queue.length) {
-      onFinish({
-        answersList: updated,
-        isExamMode: examMode
-      });
-      return;
-    }
+ const questionText = q.q_de || q.q;
+ const questionFa   = q.q_fa || null;
+ const options      = q.opts_de || q.opts;
+ const optionsFa    = q.opts_fa || [];
+ const correctAnswers = Array.isArray(q.ok) ? q.ok : [q.ok];
+ const isMarked     = !!marked[idx];
 
-    setIdx(idx + 1);
-    setChosenAnswers([]);
-    setSubmitted(false);
-  }
+ // ── صفحه تایمر منقضی ──
+ if (timeExpired) {
+   return (
+     <div style={{ textAlign: "center", padding: "40px 20px" }}>
+       <div style={{ fontSize: 50, marginBottom: 16 }}>⏱️</div>
+       <div style={{ fontWeight: 800, fontSize: 18, color: "#FCA5A5", marginBottom: 12 }}>
+         Die Bearbeitungszeit ist abgelaufen.
+       </div>
+       <div style={{ fontSize: 13, color: "#8B949E", marginBottom: 28, lineHeight: 1.7 }}>
+         Bitte starten Sie die Prüfung erneut.
+       </div>
+       <button onClick={resetToSelect}
+         style={{ background: "#FF9500", border: "none", borderRadius: 12, padding: "14px 28px", fontSize: 15, fontWeight: 800, color: "#0A2540", cursor: "pointer", fontFamily: "inherit" }}>
+         Neue Prüfung starten
+       </button>
+     </div>
+   );
+ }
 
-  if (phase === "select") {
-    return (
-      <div>
-        <div style={topRow}>
-          <button onClick={onBack} style={ghostBtn}>
-            ← برگشت
-          </button>
+ return (
+   <div>
+     {/* ── هدر ── */}
+     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+       <div style={{ fontSize: 13, color: "#8B949E", fontWeight: 600 }}>
+         Frage <strong style={{ color: "#E6EDF3" }}>{idx + 1}</strong> / {queue.length}
+       </div>
+       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+         <span style={{ fontSize: 12, color: "#8B949E" }}>
+           Punkte: <strong style={{ color: q.points === 5 ? "#FCA5A5" : "#93C5FD" }}>{q.points || 2}</strong>
+         </span>
+         {examMode && (
+           <span style={{ fontSize: 11, background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.3)", color: "#FCA5A5", borderRadius: 6, padding: "2px 8px", fontWeight: 700 }}>
+             Prüfung
+           </span>
+         )}
+       </div>
+     </div>
 
-          <h2 style={{ fontSize: 17, fontWeight: 800, margin: 0 }}>
-            انتخاب حالت آزمون
-          </h2>
-        </div>
+     {/* ── نوار پیشرفت ── */}
+     <div style={{ height: 3, background: "#1a2f52", borderRadius: 2, marginBottom: 16, overflow: "hidden" }}>
+       <div style={{ height: "100%", width: `${((idx + 1) / queue.length) * 100}%`, background: "linear-gradient(90deg,#FF9500,#FFB340)", borderRadius: 2, transition: "width .4s" }} />
+     </div>
 
-        <div style={modeGrid}>
-          {MODES.map((m) => (
-            <button
-              key={m.id}
-              onClick={() => setMode(m.id)}
-              style={{
-                ...modeBtn,
-                border:
-                  mode === m.id ? "2px solid #FF9500" : "2px solid #1e3a5f",
-                background:
-                  mode === m.id ? "rgba(255,149,0,0.1)" : "#1a2f52"
-              }}
-            >
-              <div style={{ fontSize: 24, marginBottom: 5 }}>{m.icon}</div>
-              <div style={{ fontWeight: 700, fontSize: 13, color: "#E6EDF3" }}>
-                {m.label}
-              </div>
-              <div style={{ fontSize: 11, color: "#8B949E" }}>{m.sub}</div>
-            </button>
-          ))}
-        </div>
+     {/* ── کارت سوال ── */}
+     <div style={{ background: "#fff", borderRadius: 16, padding: 18, marginBottom: 12, boxShadow: "0 4px 24px rgba(0,0,0,0.25)" }}>
+       {/* تصویر */}
+       {q.image_url && (
+         <img src={q.image_url} alt="Frage" style={{ width: "100%", borderRadius: 10, marginBottom: 12 }} />
+       )}
+       {/* ویدیو */}
+       {q.video_url && (
+         <video src={q.video_url} controls style={{ width: "100%", borderRadius: 10, marginBottom: 12 }} />
+       )}
 
-        <div style={startGrid}>
-          <button onClick={() => start(mode, false)} style={primaryBtn}>
-            📝 تمرین ۱۰ سوالی
-          </button>
+       {/* متن سوال */}
+       <p style={{ color: "#0A2540", fontSize: 15, fontWeight: 700, lineHeight: 1.7, margin: 0 }}>
+         {showFa && questionFa ? questionFa : questionText}
+       </p>
 
-          <button onClick={() => start(mode, true)} style={examBtn}>
-            🎓 شبیه‌ساز آزمون ۳۰ سوالی
-          </button>
-        </div>
-      </div>
-    );
-  }
+       {/* دکمه زبان */}
+       <button onClick={() => setShowFa(p => !p)}
+         style={{ marginTop: 10, background: "transparent", border: "1px solid #CBD5E1", borderRadius: 7, padding: "4px 12px", fontSize: 12, fontWeight: 700, color: "#475569", cursor: "pointer", fontFamily: "inherit" }}>
+         {showFa ? "Deutsch" : "فارسی"}
+       </button>
+     </div>
 
-  const q = queue[idx];
-  if (!q) return null;
+     {/* ── گزینه‌ها ── */}
+     <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
+       {options.map((opt, i) => {
+         const isSelected = chosenAnswers.includes(i);
+         let border = "#1e3a5f", bg = "#1a2f52", color = "#E6EDF3";
 
-  const topicInfo = TOPIC_INFO[q.topic] || { label: q.topic, icon: "📋" };
-  const correctAnswers = normalizeOk(q.ok);
-  const progress = ((idx + 1) / queue.length) * 100;
+         if (!answered && isSelected) {
+           border = "#FF9500"; bg = "rgba(255,149,0,0.08)";
+         }
+         if (answered && isSelected) {
+           border = "#4D6080"; bg = "#112240";
+         }
 
-  return (
-    <div>
-      <div style={examHeader}>
-        <div>
-          <div style={{ fontSize: 12, color: "#8B949E" }}>
-            {examMode ? "🎓 آزمون شبیه‌سازی‌شده" : "📝 حالت تمرین"}
-          </div>
+         const displayOpt = showFa && optionsFa[i] ? optionsFa[i] : opt;
 
-          <div style={{ fontSize: 18, fontWeight: 900, marginTop: 4 }}>
-            {idx + 1} / {queue.length}
-          </div>
-        </div>
+         return (
+           <button key={`opt-${q.id}-${i}`} onClick={() => toggleOption(i)} disabled={answered}
+             style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "right", padding: "13px 14px", borderRadius: 10, border: `2px solid ${border}`, background: bg, color, cursor: answered ? "default" : "pointer", fontFamily: "inherit", fontSize: 14, fontWeight: 500, transition: "all .15s" }}>
+             {/* چک‌باکس */}
+             <div style={{ width: 22, height: 22, borderRadius: 5, border: `2px solid ${isSelected ? "#FF9500" : "#4D6080"}`, background: isSelected ? "#FF9500" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all .15s" }}>
+               {isSelected && <span style={{ color: "#0A2540", fontSize: 13, fontWeight: 900 }}>✓</span>}
+             </div>
+             {displayOpt}
+           </button>
+         );
+       })}
+     </div>
 
-        <div style={pointsBox}>
-          <div style={{ fontSize: 11, color: "#8B949E" }}>Punkte</div>
-          <div
-            style={{
-              color: q.points === 5 ? "#FCA5A5" : "#FFB340",
-              fontWeight: 900,
-              fontSize: 20
-            }}
-          >
-            {q.points || 2}
-          </div>
-        </div>
-      </div>
+     {/* ── پیام بعد از ثبت ── */}
+     {answered && (
+       <div style={{ background: "#112240", border: "1px solid #1e3a5f", borderRadius: 10, padding: "10px 14px", marginBottom: 12, fontSize: 13, color: "#8B949E", textAlign: "center" }}>
+         Antwort gespeichert.
+       </div>
+     )}
 
-      <div style={progressBar}>
-        <div style={{ ...progressFill, width: `${progress}%` }} />
-      </div>
+     {/* ── دکمه‌های پایین ── */}
+     <div style={{ display: "flex", gap: 8 }}>
+       {/* Markieren */}
+       <button onClick={() => setMarked(p => ({ ...p, [idx]: !p[idx] }))}
+         style={{ flex: 1, background: isMarked ? "rgba(251,191,36,0.15)" : "#1a2f52", border: `1px solid ${isMarked ? "#FBB824" : "#1e3a5f"}`, borderRadius: 10, padding: "12px 0", fontSize: 12, fontWeight: 700, color: isMarked ? "#FBB824" : "#8B949E", cursor: "pointer", fontFamily: "inherit" }}>
+         🚩 Markieren
+       </button>
 
-      <div style={questionCard}>
-        <div style={questionMeta}>
-          <span>
-            {topicInfo.icon} {topicInfo.label}
-          </span>
-
-          <span style={miniBadge}>
-            {correctAnswers.length > 1
-              ? `${correctAnswers.length} پاسخ صحیح`
-              : "۱ پاسخ صحیح"}
-          </span>
-        </div>
-
-        {q.image_url && (
-          <img
-            src={q.image_url}
-            alt="سوال"
-            style={{
-              width: "100%",
-              borderRadius: 12,
-              marginBottom: 14,
-              border: "1px solid #ddd"
-            }}
-          />
-        )}
-
-        {q.video_url && (
-          <video
-            src={q.video_url}
-            controls
-            style={{
-              width: "100%",
-              borderRadius: 12,
-              marginBottom: 14
-            }}
-          />
-        )}
-
-        <h3 style={questionText}>{q.q}</h3>
-      </div>
-
-      <div style={optionsBox}>
-        {q.opts.map((opt, i) => {
-          const selected = chosenAnswers.includes(i);
-          const correct = correctAnswers.includes(i);
-
-          let bg = "#1a2f52";
-          let border = "#1e3a5f";
-          let color = "#E6EDF3";
-
-          if (!submitted && selected) {
-            bg = "rgba(255,149,0,0.08)";
-            border = "#FF9500";
-            color = "#FFB340";
-          }
-
-          if (submitted && !examMode) {
-            if (correct) {
-              bg = "rgba(46,160,67,0.18)";
-              border = "#2EA043";
-              color = "#7EE787";
-            } else if (selected && !correct) {
-              bg = "rgba(239,68,68,0.14)";
-              border = "#EF4444";
-              color = "#FCA5A5";
-            } else {
-              color = "#4D6080";
-            }
-          }
-
-          if (submitted && examMode && selected) {
-            bg = "#112240";
-            border = "#8B949E";
-          }
-
-          return (
-            <button
-              key={i}
-              onClick={() => toggleAnswer(i)}
-              disabled={submitted}
-              style={{
-                ...optionBtn,
-                background: bg,
-                border: `2px solid ${border}`,
-                color
-              }}
-            >
-              <span
-                style={{
-                  ...checkBox,
-                  background: selected ? "#FF9500" : "#112240",
-                  borderColor: selected ? "#FF9500" : "#1e3a5f",
-                  color: selected ? "#0A2540" : "#8B949E"
-                }}
-              >
-                {selected ? "✓" : ""}
-              </span>
-
-              <span style={letterBadge}>{LETTERS[i]}</span>
-
-              <span>{opt}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {submitted && !examMode && (
-        <div style={explanationBox}>
-          <div style={{ color: "#60A5FA", fontWeight: 800, marginBottom: 8 }}>
-            💡 توضیح پاسخ
-          </div>
-
-          <div style={{ color: "#E6EDF3", lineHeight: 1.9, fontSize: 13 }}>
-            {q.exp}
-          </div>
-
-          {q.tip && (
-            <div style={tipBox}>
-              📌 {q.tip}
-            </div>
-          )}
-        </div>
-      )}
-
-      {submitted && examMode && (
-        <div style={examNotice}>
-          پاسخ ثبت شد. در حالت آزمون، پاسخ صحیح تا پایان آزمون نمایش داده نمی‌شود.
-        </div>
-      )}
-
-      <div style={actionRow}>
-        <button
-          onClick={() =>
-            setMarked((prev) => ({ ...prev, [q.id]: !prev[q.id] }))
-          }
-          style={{
-            ...secondaryAction,
-            color: marked[q.id] ? "#FFB340" : "#8B949E",
-            borderColor: marked[q.id] ? "#FF9500" : "#1e3a5f"
-          }}
-        >
-          {marked[q.id] ? "⭐ علامت‌دار" : "☆ Markieren"}
-        </button>
-
-        {!submitted ? (
-          <button
-            onClick={submitAnswer}
-            disabled={chosenAnswers.length === 0}
-            style={{
-              ...mainAction,
-              opacity: chosenAnswers.length === 0 ? 0.45 : 1
-            }}
-          >
-            Abgabe / ثبت پاسخ
-          </button>
-        ) : (
-          <button onClick={nextQuestion} style={mainAction}>
-            {idx + 1 < queue.length ? "Weiter / سوال بعدی" : "نتیجه آزمون"}
-          </button>
-        )}
-      </div>
-    </div>
-  );
+       {!answered ? (
+         <button onClick={submitAnswer} disabled={chosenAnswers.length === 0}
+           style={{ flex: 2, background: chosenAnswers.length === 0 ? "#1e3a5f" : "#EF4444", border: "none", borderRadius: 10, padding: "12px 0", fontSize: 14, fontWeight: 800, color: chosenAnswers.length === 0 ? "#4D6080" : "#fff", cursor: chosenAnswers.length === 0 ? "default" : "pointer", fontFamily: "inherit" }}>
+           Abgabe ✔
+         </button>
+       ) : (
+         <button onClick={next}
+           style={{ flex: 2, background: "#FF9500", border: "none", borderRadius: 10, padding: "12px 0", fontSize: 14, fontWeight: 800, color: "#0A2540", cursor: "pointer", fontFamily: "inherit" }}>
+           {idx + 1 < queue.length ? "Weiter →" : "Ergebnis anzeigen"}
+         </button>
+       )}
+     </div>
+   </div>
+ );
 }
-
-const topRow = {
-  display: "flex",
-  alignItems: "center",
-  gap: 10,
-  marginBottom: 20
-};
-
-const ghostBtn = {
-  background: "transparent",
-  border: "1px solid #1e3a5f",
-  borderRadius: 8,
-  padding: "6px 12px",
-  color: "#8B949E",
-  cursor: "pointer",
-  fontSize: 13,
-  fontFamily: "inherit"
-};
-
-const modeGrid = {
-  display: "grid",
-  gridTemplateColumns: "repeat(2,1fr)",
-  gap: 10,
-  marginBottom: 16
-};
-
-const modeBtn = {
-  textAlign: "right",
-  padding: 14,
-  borderRadius: 16,
-  cursor: "pointer",
-  fontFamily: "inherit"
-};
-
-const startGrid = {
-  display: "grid",
-  gridTemplateColumns: "1fr 1fr",
-  gap: 10
-};
-
-const primaryBtn = {
-  background: "#FF9500",
-  border: "none",
-  borderRadius: 12,
-  padding: "14px 0",
-  fontSize: 15,
-  fontWeight: 800,
-  color: "#0A2540",
-  cursor: "pointer",
-  fontFamily: "inherit"
-};
-
-const examBtn = {
-  background: "#1a2f52",
-  border: "2px solid #FF9500",
-  borderRadius: 12,
-  padding: "14px 0",
-  fontSize: 15,
-  fontWeight: 800,
-  color: "#FFB340",
-  cursor: "pointer",
-  fontFamily: "inherit"
-};
-
-const examHeader = {
-  background: "#112240",
-  border: "1px solid #1e3a5f",
-  borderRadius: 16,
-  padding: "12px 14px",
-  marginBottom: 10,
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center"
-};
-
-const pointsBox = {
-  background: "#0A2540",
-  border: "1px solid #1e3a5f",
-  borderRadius: 12,
-  padding: "8px 14px",
-  textAlign: "center"
-};
-
-const progressBar = {
-  height: 6,
-  background: "#1a2f52",
-  borderRadius: 6,
-  overflow: "hidden",
-  marginBottom: 16
-};
-
-const progressFill = {
-  height: "100%",
-  background: "linear-gradient(90deg,#FF9500,#FFB340)",
-  transition: "width .3s"
-};
-
-const questionCard = {
-  background: "#fff",
-  color: "#0A2540",
-  borderRadius: 18,
-  padding: 18,
-  marginBottom: 14,
-  boxShadow: "0 8px 32px rgba(0,0,0,0.28)"
-};
-
-const questionMeta = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  gap: 8,
-  marginBottom: 12,
-  fontSize: 11,
-  fontWeight: 800,
-  color: "#0A2540"
-};
-
-const miniBadge = {
-  background: "#FEF3C7",
-  color: "#92400E",
-  borderRadius: 8,
-  padding: "3px 8px"
-};
-
-const questionText = {
-  fontSize: 16,
-  lineHeight: 1.7,
-  margin: 0
-};
-
-const optionsBox = {
-  display: "flex",
-  flexDirection: "column",
-  gap: 9
-};
-
-const optionBtn = {
-  width: "100%",
-  display: "flex",
-  alignItems: "center",
-  gap: 10,
-  padding: "13px 14px",
-  borderRadius: 12,
-  fontFamily: "inherit",
-  fontSize: 14,
-  fontWeight: 700,
-  textAlign: "right",
-  cursor: "pointer"
-};
-
-const checkBox = {
-  width: 24,
-  height: 24,
-  borderRadius: 6,
-  border: "2px solid",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  flexShrink: 0,
-  fontWeight: 900
-};
-
-const letterBadge = {
-  width: 24,
-  height: 24,
-  borderRadius: 6,
-  background: "#0A2540",
-  color: "#8B949E",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  flexShrink: 0,
-  fontSize: 11,
-  fontWeight: 800
-};
-
-const explanationBox = {
-  marginTop: 16,
-  background: "#112240",
-  border: "1px solid #1e3a5f",
-  borderRadius: 14,
-  padding: 16
-};
-
-const tipBox = {
-  marginTop: 12,
-  background: "rgba(96,165,250,0.08)",
-  border: "1px solid rgba(96,165,250,0.2)",
-  borderRadius: 10,
-  padding: 10,
-  color: "#93C5FD",
-  fontSize: 12,
-  lineHeight: 1.8
-};
-
-const examNotice = {
-  marginTop: 16,
-  background: "#112240",
-  border: "1px solid #1e3a5f",
-  borderRadius: 12,
-  padding: 12,
-  color: "#8B949E",
-  fontSize: 12,
-  lineHeight: 1.8,
-  textAlign: "center"
-};
-
-const actionRow = {
-  display: "grid",
-  gridTemplateColumns: "1fr 2fr",
-  gap: 10,
-  marginTop: 18
-};
-
-const secondaryAction = {
-  background: "#112240",
-  border: "1px solid #1e3a5f",
-  borderRadius: 12,
-  padding: "12px 0",
-  fontFamily: "inherit",
-  fontWeight: 800,
-  cursor: "pointer"
-};
-
-const mainAction = {
-  background: "#FF9500",
-  border: "none",
-  borderRadius: 12,
-  padding: "12px 0",
-  color: "#0A2540",
-  fontFamily: "inherit",
-  fontWeight: 900,
-  cursor: "pointer"
-};
