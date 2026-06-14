@@ -2,41 +2,45 @@ import PageHeader from "../components/PageHeader";
 import { COLORS } from "../theme/colors";
 
 const SCHOOLS = [
+  const SCHOOLS = [
   {
     id: 1,
     city: "Hamburg",
-    name: "Demo Fahrschule Hamburg",
-    address: "Hamburg, Bergedorf",
-    rating: "4.8",
-    reviews: "124",
-    languages: "Deutsch / Englisch / Persisch",
-    tags: ["Demo", "Umschreibung", "Theorie"],
-    website: "https://www.google.com/search?q=Fahrschule+Hamburg+Bergedorf",
-    maps: "https://www.google.com/maps/search/Fahrschule+Hamburg+Bergedorf"
+    name: "AB Fahrschule Hamburg",
+    address: "Tornberg 32, 22337 Hamburg — Barmbek Süd",
+    rating: "4.6",
+    reviews: "89",
+    languages: "فارسی / Deutsch / English",
+    tags: ["فارسی", "دوره فشرده", "موتور", "تبدیل گواهینامه"],
+    description: "دوره فشرده ۲ هفته‌ای. کلاس تئوری فارسی دوشنبه و سه‌شنبه ۱۷:۳۰–۱۹:۰۰. تلفن: 040 55635102",
+    website: "https://www.ab-fahrschule.de",
+    maps: "https://maps.google.com/?q=Tornberg+32+22337+Hamburg"
   },
   {
     id: 2,
-    city: "Berlin",
-    name: "Demo Fahrschule Berlin",
-    address: "Berlin, Mitte",
-    rating: "4.7",
-    reviews: "156",
-    languages: "Deutsch / Englisch / Persisch",
-    tags: ["Demo", "Mehrsprachig", "Online"],
-    website: "https://www.google.com/search?q=Fahrschule+Berlin+Mitte",
-    maps: "https://www.google.com/maps/search/Fahrschule+Berlin+Mitte"
+    city: "Hamburg",
+    name: "Fahrschule Wandsbek S&K",
+    address: "Wandsbeker Zollstr. 115, 22041 Hamburg",
+    rating: "4.5",
+    reviews: "124",
+    languages: "فارسی / Deutsch / English / Türkçe",
+    tags: ["فارسی", "تئوری ۷ روزه", "آنلاین"],
+    description: "مدرس ایرانی (Ehsan Safarzadeh). ثبت‌نام پایه ۵۹۹ یورو. تلفن: 040 72002933",
+    website: "https://fahrschule-wandsbek.de",
+    maps: "https://maps.google.com/?q=Wandsbeker+Zollstr+115+22041+Hamburg"
   },
   {
     id: 3,
-    city: "Köln",
-    name: "Demo Fahrschule Köln",
-    address: "Köln, Ehrenfeld",
-    rating: "4.5",
-    reviews: "71",
-    languages: "Deutsch / Englisch",
-    tags: ["Demo", "Auto", "Motorrad"],
-    website: "https://www.google.com/search?q=Fahrschule+Köln+Ehrenfeld",
-    maps: "https://www.google.com/maps/search/Fahrschule+Köln+Ehrenfeld"
+    city: "Duisburg",
+    name: "Fahrschule Rezai",
+    address: "Eigenstrasse 63, 47053 Duisburg-Hochfeld",
+    rating: "4.7",
+    reviews: "67",
+    languages: "فارسی / Deutsch / English",
+    tags: ["فارسی", "تبدیل گواهینامه", "از ۱۹۹۷"],
+    description: "Hossein Rezai فارسی صحبت می‌کند. کلاس تئوری فارسی روزهای شنبه. ماشین‌های Mercedes. تلفن: 0171 5301344",
+    website: "https://www.fahrschule-rezai.de",
+    maps: "https://maps.google.com/?q=Eigenstrasse+63+47053+Duisburg"
   }
 ];
 
