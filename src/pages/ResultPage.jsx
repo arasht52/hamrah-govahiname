@@ -134,12 +134,12 @@ export default function ResultPage({ result, onRetry, onHome }) {
 
       <div style={buttonRow}>
         <button onClick={onHome} style={secondaryBtn}>
-          خانه
-        </button>
+  خانه
+       </button>
 
-        <button onClick={onRetry} style={primaryBtn}>
-          Neue Prüfung
-        </button>
+       <button onClick={onRetry} style={primaryBtn}>
+  آزمون مجدد
+      </button>
       </div>
     </div>
   );
