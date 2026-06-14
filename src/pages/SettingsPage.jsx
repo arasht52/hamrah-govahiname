@@ -1,3 +1,4 @@
+import PageHeader from "../components/PageHeader";
 export default function SettingsPage({ onBack }) {
   const handleClearStats = () => {
     const ok = window.confirm("آیا مطمئن هستید که می‌خواهید آمار پاک شود؟");
@@ -12,7 +13,10 @@ export default function SettingsPage({ onBack }) {
       <button onClick={onBack}>بازگشت</button>
 
       <h1>⚙️ تنظیمات</h1>
-
+<PageHeader
+  title="تنظیمات"
+  onBack={onBack}
+/>
       <div
         style={{
           background: "#fff",
