@@ -19,12 +19,7 @@ const ITEMS = [
     title: "آموزشگاه‌ها",
     subtitle: "لیست آموزشگاه‌های رانندگی"
   },
-  {
-    id: "signs",
-    icon: "🚦",
-    title: "تابلوها",
-    subtitle: "دسته‌بندی تابلوهای رانندگی"
-  },
+  
   {
     id: "settings",
     icon: "⚙️",
