@@ -1,3 +1,4 @@
+import PageHeader from "../components/PageHeader";
 export default function AIPage({ onBack }) {
 import { useState } from "react";
 import { COLORS } from "../theme/colors";
