@@ -84,15 +84,17 @@ export default function PracticeQuizPage({ onFinish, onBack }) {
     <div>
       <div style={topBar}>
         <button onClick={onBack} style={backBtn}>
-          ← Zurück
+          ← برگشت
         </button>
 
         <div style={topInfo}>
-          <div style={modeBadge}>Lernmodus</div>
-          <div style={counter}>Frage {idx + 1} / {queue.length}</div>
+          <div style={modeBadge}>تمرین آموزشی</div>
+          <div style={counter}>
+            سؤال {idx + 1} از {queue.length}
+          </div>
         </div>
 
-        <div style={pointsBadge}>{q.points || 2} Punkte</div>
+        <div style={pointsBadge}>{q.points || 2} امتیاز</div>
       </div>
 
       <div style={progressBar}>
@@ -164,15 +166,12 @@ export default function PracticeQuizPage({ onFinish, onBack }) {
               <span
                 style={{
                   ...checkbox,
-                  borderColor: selected || (submitted && isCorrect)
-                    ? border
-                    : "#9CA3AF",
-                  background: selected || (submitted && isCorrect)
-                    ? border
-                    : "#FFFFFF",
-                  color: selected || (submitted && isCorrect)
-                    ? "#FFFFFF"
-                    : "transparent"
+                  borderColor:
+                    selected || (submitted && isCorrect) ? border : "#9CA3AF",
+                  background:
+                    selected || (submitted && isCorrect) ? border : "#FFFFFF",
+                  color:
+                    selected || (submitted && isCorrect) ? "#FFFFFF" : "transparent"
                 }}
               >
                 ✓
@@ -192,10 +191,17 @@ export default function PracticeQuizPage({ onFinish, onBack }) {
 
       {submitted && (
         <div style={explanationCard}>
-          <div style={explanationTitle}>
+          <div
+            style={{
+              ...explanationTitle,
+              color: isExactAnswer(chosenAnswers, correctAnswers)
+                ? "#168A3A"
+                : "#DC2626"
+            }}
+          >
             {isExactAnswer(chosenAnswers, correctAnswers)
-              ? "✅ Richtig"
-              : "❌ Falsch"}
+              ? "✅ پاسخ درست بود"
+              : "❌ پاسخ اشتباه بود"}
           </div>
 
           <div style={explanationText}>
@@ -219,11 +225,11 @@ export default function PracticeQuizPage({ onFinish, onBack }) {
               cursor: chosenAnswers.length === 0 ? "default" : "pointer"
             }}
           >
-            Abgabe
+            ثبت پاسخ
           </button>
         ) : (
           <button onClick={nextQuestion} style={primaryBtn}>
-            {idx + 1 < queue.length ? "Weiter" : "Ergebnis anzeigen"}
+            {idx + 1 < queue.length ? "سؤال بعدی" : "مشاهده نتیجه"}
           </button>
         )}
       </div>
@@ -396,7 +402,6 @@ const explanationCard = {
 };
 
 const explanationTitle = {
-  color: "#168A3A",
   fontSize: 14,
   fontWeight: 950,
   marginBottom: 8
