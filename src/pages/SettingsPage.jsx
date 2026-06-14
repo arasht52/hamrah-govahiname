@@ -1,6 +1,11 @@
 import PageHeader from "../components/PageHeader";
 import { clearStats } from "../utils/storage";
 import { COLORS } from "../theme/colors";
+import {
+  card,
+  dangerButton,
+  sectionTitle
+} from "../theme/components";
 
 export default function SettingsPage({ onBack }) {
   const handleClearStats = () => {
@@ -16,7 +21,7 @@ export default function SettingsPage({ onBack }) {
     <div>
       <PageHeader title="تنظیمات" onBack={onBack} />
 
-      <div style={card}>
+      <div style={{ ...card, marginBottom: 14 }}>
         <div style={label}>نسخه برنامه</div>
         <div style={value}>1.0.0</div>
       </div>
@@ -28,21 +33,13 @@ export default function SettingsPage({ onBack }) {
           آمار آزمون‌ها و تمرین‌ها در حافظه مرورگر ذخیره می‌شود.
         </p>
 
-        <button onClick={handleClearStats} style={dangerBtn}>
+        <button onClick={handleClearStats} style={dangerButton}>
           پاک کردن آمار
         </button>
       </div>
     </div>
   );
 }
-
-const card = {
-  background: COLORS.white,
-  border: `1px solid ${COLORS.border}`,
-  borderRadius: 20,
-  padding: 18,
-  marginBottom: 14
-};
 
 const label = {
   color: COLORS.muted,
@@ -57,28 +54,9 @@ const value = {
   fontWeight: 950
 };
 
-const sectionTitle = {
-  margin: "0 0 10px",
-  color: COLORS.green,
-  fontSize: 16,
-  fontWeight: 950
-};
-
 const text = {
   color: COLORS.muted,
   lineHeight: 1.9,
   margin: "0 0 14px",
   fontSize: 14
-};
-
-const dangerBtn = {
-  width: "100%",
-  background: COLORS.dangerSoft,
-  border: `1px solid ${COLORS.dangerBorder}`,
-  color: COLORS.danger,
-  borderRadius: 14,
-  padding: "13px 0",
-  fontWeight: 950,
-  fontFamily: "inherit",
-  cursor: "pointer"
 };
