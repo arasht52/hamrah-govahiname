@@ -21,7 +21,7 @@ function isExactAnswer(chosen, correct) {
 }
 
 export default function ExamQuizPage({ onFinish, onBack }) {
-  const [queue] = useState(() => selectQuestions(QUESTIONS, 30));
+  const [queue] = useState(() => selectQuestions(ALL_QUESTIONS,30));
   const [idx, setIdx] = useState(0);
   const [chosenAnswers, setChosenAnswers] = useState([]);
   const [answersList, setAnswersList] = useState([]);
