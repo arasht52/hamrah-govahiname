@@ -124,8 +124,7 @@ export default function SignsPage({ onBack }) {
       ))}
 
       <div style={{ background: COLORS.warningSoft, border: `1px solid ${COLORS.warningBorder}`, color: COLORS.warningText, borderRadius: 16, padding: 14, fontSize: 12, lineHeight: 1.8, marginTop: 8 }}>
-        ⚠️ تصاویر بر اساس استاندارد رسمی StVO آلمان. تابلوهای بدون تصویر به زودی اضافه می‌شوند.
-      </div>
-    </div>
+  ⚠️ این بخش آموزشی است. بعضی تصاویر به‌صورت نمونه نمایش داده می‌شوند و قبل از انتشار عمومی باید با منابع رسمی StVO / TÜV / DEKRA راستی‌آزمایی شوند.
+</div>
   );
 }
