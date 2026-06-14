@@ -1,3 +1,4 @@
+export default function FahrschulenPage({ onBack }) {
 import { COLORS } from "../theme/colors";
 
 const SCHOOLS = [
