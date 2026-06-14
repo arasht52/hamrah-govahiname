@@ -7,9 +7,10 @@ export default function Header() {
         left: 0,
         right: 0,
         zIndex: 50,
-        background: "#0A2540",
-        borderBottom: "1px solid #1e3a5f",
-        padding: "12px 16px"
+        background: "#ffffff",
+        borderBottom: "1px solid #BBD7C0",
+        padding: "12px 16px",
+        boxShadow: "0 2px 10px rgba(0,0,0,0.04)"
       }}
     >
       <div
@@ -26,39 +27,54 @@ export default function Header() {
             style={{
               width: 38,
               height: 38,
-              background: "#FF9500",
+              background: "#168A3A",
               borderRadius: 10,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 20
+              fontSize: 20,
+              color: "#fff"
             }}
           >
             🚗
           </div>
 
           <div>
-            <div style={{ fontWeight: 800, fontSize: 16, color: "#fff" }}>
+            <div
+              style={{
+                fontWeight: 900,
+                fontSize: 16,
+                color: "#111827",
+                lineHeight: 1
+              }}
+            >
               همراه گواهینامه
             </div>
-            <div style={{ fontSize: 11, color: "#8B949E", marginTop: 2 }}>
-              راهنمای فارسی‌زبانان آلمان
+
+            <div
+              style={{
+                fontSize: 11,
+                color: "#64736A",
+                marginTop: 4
+              }}
+            >
+              شبیه‌ساز فارسی آزمون رانندگی آلمان
             </div>
           </div>
         </div>
 
         <div
           style={{
-            background: "rgba(255,149,0,0.12)",
-            border: "1px solid rgba(255,149,0,0.25)",
+            background: "#E8F6E8",
+            border: "1px solid #BBD7C0",
+            color: "#168A3A",
             borderRadius: 20,
-            padding: "5px 12px",
+            padding: "6px 12px",
             fontSize: 12,
-            fontWeight: 700,
-            color: "#FFB340"
+            fontWeight: 900
           }}
         >
-          MVP
+          TÜV Demo
         </div>
       </div>
     </header>
