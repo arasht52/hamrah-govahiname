@@ -52,12 +52,11 @@ export default function App() {
         )}
 
         {page === "quiz" && (
-          <QuizPage
-            onStartPractice={() => setPage("practice")}
-            onStartExam={() => setPage("exam")}
-            onBack={() => setPage("home")}
-          />
-        )}
+  <QuizPage
+    onStartPractice={() => setPage("practice")}
+    onStartExam={() => setPage("exam")}
+  />
+)}
 
         {page === "practice" && (
           <PracticeQuizPage
