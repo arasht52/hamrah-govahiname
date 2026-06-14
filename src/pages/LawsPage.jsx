@@ -1,3 +1,4 @@
+import PageHeader from "../components/PageHeader";
 export default function LawsPage({ onBack }) {
 import { useState } from "react";
 import { COLORS } from "../theme/colors";
@@ -36,7 +37,10 @@ export default function LawsPage() {
           برای آمادگی بهتر در آزمون تئوری.
         </p>
       </div>
-
+<PageHeader
+  title="قوانین رانندگی"
+  onBack={onBack}
+/>
       <div style={selectCard}>
         <label style={label}>انتخاب فصل</label>
 
