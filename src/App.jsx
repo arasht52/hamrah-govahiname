@@ -19,6 +19,7 @@ import WrongQuestionsPage from "./pages/WrongQuestionsPage";
 import SearchQuestionsPage from "./pages/SearchQuestionsPage";
 
 import { getStats } from "./utils/storage";
+import { getExamSession, clearExamSession } from "./utils/examSession";
 
 const APP_CONTAINER_STYLE = {
   fontFamily: "'Vazirmatn', sans-serif",
@@ -38,10 +39,32 @@ export default function App() {
   const [page, setPage] = useState("home");
   const [quizResult, setQuizResult] = useState(null);
   const [wrongPracticeQuestions, setWrongPracticeQuestions] = useState([]);
+  const [resumeExamSession, setResumeExamSession] = useState(null);
 
   const finishQuiz = (result) => {
+    clearExamSession();
     setQuizResult(result);
+    setResumeExamSession(null);
     setPage("result");
+  };
+
+  const startExam = () => {
+    const savedSession = getExamSession();
+
+    if (savedSession) {
+      setResumeExamSession(savedSession);
+      setPage("exam");
+      return;
+    }
+
+    setResumeExamSession(null);
+    setPage("exam");
+  };
+
+  const startNewExam = () => {
+    clearExamSession();
+    setResumeExamSession(null);
+    setPage("exam");
   };
 
   const startWrongQuestionsPractice = () => {
@@ -86,7 +109,7 @@ export default function App() {
         {page === "quiz" && (
           <QuizPage
             onStartPractice={() => setPage("practice")}
-            onStartExam={() => setPage("exam")}
+            onStartExam={startExam}
           />
         )}
 
@@ -96,9 +119,7 @@ export default function App() {
             onBack={() => setPage("quiz")}
           />
         )}
-{page === "searchQuestions" && (
-  <SearchQuestionsPage onBack={() => setPage("more")} />
-)}
+
         {page === "wrongPractice" && (
           <PracticeQuizPage
             customQuestions={wrongPracticeQuestions}
@@ -111,6 +132,8 @@ export default function App() {
           <ExamQuizPage
             onFinish={finishQuiz}
             onBack={() => setPage("quiz")}
+            savedSession={resumeExamSession}
+            onStartNewExam={startNewExam}
           />
         )}
 
@@ -141,6 +164,10 @@ export default function App() {
             onBack={() => setPage("more")}
             onStartPractice={startWrongQuestionsPractice}
           />
+        )}
+
+        {page === "searchQuestions" && (
+          <SearchQuestionsPage onBack={() => setPage("more")} />
         )}
 
         {page === "settings" && (
