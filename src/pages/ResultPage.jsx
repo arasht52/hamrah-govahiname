@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { saveAttempt } from "../utils/storage";
 export default function ResultPage({ result, onRetry, onHome }) {
   const answersList = result?.answersList || [];
   const isExamMode = result?.isExamMode ?? false;
