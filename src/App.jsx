@@ -10,29 +10,29 @@ import AIPage from "./pages/AIPage";
 import LawsPage from "./pages/LawsPage";
 import FahrschulenPage from "./pages/FahrschulenPage";
 
+const APP_CONTAINER_STYLE = {
+  fontFamily: "'Vazirmatn', sans-serif",
+  direction: "rtl",
+  background: "#E8F6E8",
+  minHeight: "100vh",
+  color: "#111827"
+};
+
+const MAIN_CONTENT_STYLE = {
+  maxWidth: 640,
+  margin: "0 auto",
+  padding: "74px 16px 92px"
+};
+
 export default function App() {
   const [page, setPage] = useState("home");
   const [quizResult, setQuizResult] = useState(null);
 
   return (
-    <div
-      style={{
-        fontFamily: "'Vazirmatn', sans-serif",
-        direction: "rtl",
-        background: "#0A2540",
-        minHeight: "100vh",
-        color: "#E6EDF3"
-      }}
-    >
+    <div style={APP_CONTAINER_STYLE}>
       <Header />
 
-      <main
-        style={{
-          maxWidth: 640,
-          margin: "0 auto",
-          padding: "70px 16px 90px"
-        }}
-      >
+      <main style={MAIN_CONTENT_STYLE}>
         {page === "home" && (
           <HomePage
             onStartQuiz={() => setPage("quiz")}
@@ -41,15 +41,14 @@ export default function App() {
         )}
 
         {page === "quiz" && (
-  <QuizPage
-    onFinish={(result) => {
-      setQuizResult(result);
-      setPage("result");
-    }}
-    onBack={() => setPage("home")}
-  />
-)}
-
+          <QuizPage
+            onFinish={(result) => {
+              setQuizResult(result);
+              setPage("result");
+            }}
+            onBack={() => setPage("home")}
+          />
+        )}
 
         {page === "result" && (
           <ResultPage
@@ -59,23 +58,14 @@ export default function App() {
           />
         )}
 
-       {page === "ai" && (
-  <AIPage
-    onBack={() => setPage("home")}
-  />
- )}
+        {page === "ai" && <AIPage onBack={() => setPage("home")} />}
 
-     {page === "laws" && <LawsPage onBack={() => setPage("home")} />}
+        {page === "laws" && <LawsPage />}
 
-    {page === "fahrschulen" && (
-  <FahrschulenPage />
-)}
+        {page === "fahrschulen" && <FahrschulenPage />}
       </main>
 
-      <BottomNav
-        active={page}
-        onSelect={setPage}
-      />
+      <BottomNav active={page} onSelect={setPage} />
     </div>
   );
 }
