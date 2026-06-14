@@ -1,22 +1,12 @@
 import { useState } from "react";
 
 export default function LawsPage({ onBack }) {
-  const [activeTab, setActiveTab] = useState("rules");
+  const [selectedChapter, setSelectedChapter] = useState("1");
 
-  const tabs = [
-    { id: "rules", label: "🔄 فرآیند تبدیل (Umschreibung)" },
-    { id: "docs", label: "📂 مدارک و معاینات" },
-    { id: "schools", label: "🚗 آموزشگاه‌های فارسی‌زبان" },
-    { id: "references", label: "📚 مراجع و کتابچه امتحان" }
-  ];
-
-  // دیتای آموزشگاه‌های رانندگی به تفکیک شهرهای بزرگ آلمان
-  const drivingSchools = [
-    { city: "برلین (Berlin)", schools: ["آموزشگاه رانندگی آریانا (Ariana) - دارای مربیان فارسی‌زبان برای تئوری و عملی", "آموزشگاه رانندگی یوروپ (Europe) - پشتیبانی از زبان‌های فارسی، دری و عربی"] },
-    { city: "هامبورگ (Hamburg)", schools: ["آموزشگاه رانندگی البرز (Alborz) - مدیریت و مربیان ایرانی (با سابقه طولانی)", "آموزشگاه رانندگی ستاره (Star) - بخش ویژه هنرجویان فارسی‌زبان و خدمات تبدیل گواهینامه"] },
-    { city: "فرانکفورت (Frankfurt)", schools: ["آموزشگاه رانندگی هما (Homa) - مربیان مجرب ایرانی برای آموزش‌های عملی", "آموزشگاه رانندگی ایده‌آل (Ideal) - پوشش کامل منطقه فرانکفورت و حومه به زبان فارسی"] },
-    { city: "ایالت NRW (کلن / دوسلدورف)", schools: ["آموزشگاه رانندگی آرش (Arash) - بسیار محبوب در منطقه کلن با مدیریت فارسی‌زبان", "آموزشگاه رانندگی راین (Rhein) - ارائه مشاوره و آموزش عملی به زبان فارسی و دری"] },
-    { city: "مونیخ (München)", schools: ["آموزشگاه رانندگی پرسپولیس (Persepolis) - پوشش کامل مناطق مونیخ برای متقاضیان ایرانی و افغانستانی"] }
+  const chapters = [
+    { id: "1", title: "فصل ۱: انسان به عنوان عامل ترافیک (الکل، داروها و تمرکز)" },
+    { id: "2", title: "فصل ۲: اصول ایمنی، سرعت و مسافت ترمزگیری" },
+    { id: "3", title: "فصل ۳: قوانین استفاده از راه‌ها (به زودی...)" },
   ];
 
   return (
@@ -24,107 +14,73 @@ export default function LawsPage({ onBack }) {
       
       {/* هدر صفحه */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 850, margin: 0, color: "#FFF" }}>🚦 مرجع قوانین، مدارک و آموزشگاه‌ها</h3>
+        <h3 style={{ fontSize: 16, fontWeight: 850, margin: 0, color: "#FFF" }}>📖 کتابچه کامل آیین‌نامه رانندگی آلمان</h3>
         <button onClick={onBack}
           style={{ background: "transparent", border: "1px solid #1e3a5f", borderRadius: 8, padding: "6px 14px", color: "#8B949E", cursor: "pointer", fontSize: 12, fontFamily: "inherit" }}>
           برگشت
         </button>
       </div>
 
-      {/* تب‌های ناوبری بالای صفحه */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 16, overflowX: "auto", paddingBottom: 6 }}>
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            style={{
-              whiteSpace: "nowrap",
-              background: activeTab === tab.id ? "#FF9500" : "#1a2f52",
-              color: activeTab === tab.id ? "#0A2540" : "#E6EDF3",
-              border: "none",
-              borderRadius: 10,
-              padding: "10px 14px",
-              fontSize: 12,
-              fontWeight: 700,
-              cursor: "pointer",
-              fontFamily: "inherit",
-              transition: "all 0.2s"
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
+      {/* منوی کشویی انتخاب فصل‌ها */}
+      <div style={{ marginBottom: 16, textAlign: "right" }}>
+        <label style={{ fontSize: 12, color: "#8B949E", display: "block", marginBottom: 6, fontWeight: 700 }}>انتخاب فصل کتاب:</label>
+        <select 
+          value={selectedChapter} 
+          onChange={(e) => setSelectedChapter(e.target.value)}
+          style={{ width: "100%", background: "#1a2f52", color: "#E6EDF3", border: "1px solid #1e3a5f", borderRadius: 10, padding: "12px", fontSize: 13, fontFamily: "inherit", cursor: "pointer", outline: "none", direction: "rtl" }}
+        >
+          {chapters.map((ch) => (
+            <option key={ch.id} value={ch.id}>{ch.title}</option>
+          ))}
+        </select>
       </div>
 
-      {/* محتوای اصلی متنی تب‌ها */}
-      <div style={{ flex: 1, background: "#112240", border: "1px solid #1e3a5f", borderRadius: 16, padding: 18, color: "#E6EDF3", overflowY: "auto", textAlign: "right", lineHeight: "1.8" }}>
+      {/* باکس نمایش متن کتاب */}
+      <div style={{ flex: 1, background: "#112240", border: "1px solid #1e3a5f", borderRadius: 16, padding: 18, color: "#E6EDF3", overflowY: "auto", textAlign: "right", lineHeight: "1.9" }}>
         
-        {/* ۱. تب قوانین و فرآیند تبدیل */}
-        {activeTab === "rules" && (
+        {/* ==================== فصل اول ==================== */}
+        {selectedChapter === "1" && (
           <div>
-            <h4 style={{ color: "#FF9500", marginTop: 0, fontSize: 14 }}>شرایط تبدیل گواهینامه ایرانی به آلمانی (Umschreibung)</h4>
-            <p style={{ fontSize: 13 }}>اگر در ایران گواهینامه معتبر دارید، نیازی به گذراندن دوره صفر تا صد رانندگی در آلمان نیست. شما می‌توانید پرونده خود را به عنوان <strong>Umschreibung</strong> به جریان بیندازید تا در هزینه‌ها (صرفه‌جویی بین ۱۰۰۰ تا ۱۵۰۰ یورو) و زمان جلو بیفتید.</p>
+            <h4 style={{ color: "#FF9500", marginTop: 0, fontSize: 15, borderBottom: "1px solid #1e3a5f", paddingBottom: 8 }}>Der Mensch als Verkehrsteilnehmer (انسان در ترافیک)</h4>
             
-            <blockquote style={{ background: "#1a2f52", borderRight: "4px solid #FF9500", margin: "12px 0", padding: "10px 14px", borderRadius: 4, fontSize: 12 }}>
-              <strong>قانون مهم ۶ ماهه:</strong> شما پس از ثبت اولین آدرس (Meldebescheinigung) در آلمان، فقط <strong>۶ ماه</strong> اجازه دارید با ترجمه رسمی گواهینامه ایرانی خود رانندگی کنید. پس از این مدت، رانندگی بدون گواهینامه آلمانی جرم محسوب می‌شود.
+            <h5 style={{ color: "#FF9500", fontSize: 13, marginBottom: 4 }}>۱. اصل اساسی ترافیک (StVO §1)</h5>
+            <p style={{ fontSize: 12, color: "#8B949E", margin: "0 0 4px 0", fontStyle: "italic" }}>Die Teilnahme am Straßenverkehr erfordert ständige Vorsicht und gegenseitige Rücksicht.</p>
+            <p style={{ fontSize: 13, margin: "0 0 12px 0" }}>شرکت در ترافیک نیازمند <strong>احتیاط مداوم</strong> و <strong>رعایت متقابل حقوق دیگران</strong> است. شما باید طوری رانندگی کنید که هیچ‌کس آسیب نبیند، به خطر نیفتد و مانعی برای بقیه ایجاد نشود.</p>
+
+            <h5 style={{ color: "#FF9500", fontSize: 13, marginBottom: 4 }}>۲. خستگی مفرط و حواس‌پرتی (Übermüdung)</h5>
+            <p style={{ fontSize: 13, margin: "0 0 12px 0" }}>خستگی شدید منجر به پدیده مرگبار <strong>خواب ثانیه‌ای (Sekundenschlaf)</strong> می‌شود. علائمی مثل سنگینی پلک و خمیازه زدن یعنی هشدار قرمز! باز کردن پنجره یا بلند کردن صدای رادیو تأثیری ندارد؛ تنها راه حل واقعی، توقف در پارکینگ و کمی خوابیدن یا پیاده‌روی است.</p>
+            
+            <h5 style={{ color: "#FF9500", fontSize: 13, marginBottom: 4 }}>۳. قوانین الکل و حد مجاز (Alkohol)</h5>
+            <ul style={{ paddingRight: 20, fontSize: 12, margin: 0 }}>
+              <li><strong>حد مجاز عمومی (0.5 Promille):</strong> برای رانندگان باسابقه حداکثر میزان مجاز است، به شرطی که رانندگی خطرناک یا تصادف نکنند.</li>
+              <li><strong>قانون صفر مطلق (0.0 Promille):</strong> برای رانندگان زیر ۲۱ سال و کسانی که در دوره آزمایشی ۲ ساله گواهینامه (Probezeit) هستند، الکل باید دقیقاً صفر باشد.</li>
+            </ul>
+
+            <h5 style={{ color: "#FF9500", fontSize: 13, marginTop: 12, marginBottom: 4 }}>۴. داروها و مواد مخدر (Drogen & Medikamente)</h5>
+            <p style={{ fontSize: 13, margin: 0 }}>مصرف مواد مخدر (حشیش، کوکائین و...) باعث ابطال فوری گواهینامه و ارجاع به تست روان‌شناختی سخت‌گیرانه <strong>MPU</strong> می‌شود. همچنین داروهای ضد حساسیت یا مسکن‌های قوی سرعت واکنش شما را کاهش می‌دهند و مسئولیت مصرف آن‌ها کاملاً با راننده است.</p>
+          </div>
+        )}
+
+        {/* ==================== فصل دوم ==================== */}
+        {selectedChapter === "2" && (
+          <div>
+            <h4 style={{ color: "#FF9500", marginTop: 0, fontSize: 15, borderBottom: "1px solid #1e3a5f", paddingBottom: 8 }}>Grundregeln, Geschwindigkeit und Bremsweg (اصول رانندگی و محاسبات ترمز)</h4>
+            
+            <h5 style={{ color: "#FF9500", fontSize: 13, marginBottom: 4 }}>۱. انتخاب سرعت مناسب (Geschwindigkeit)</h5>
+            <p style={{ fontSize: 13, margin: "0 0 12px 0" }}>سرعت شما باید همیشه با شرایط جاده، دید، آب‌وهوا و بار ماشین هماهنگ باشد. سرعت باید طوری باشد که بتوانید در فاصه دید خود (Sichtweite) ماشین را کاملاً متوقف کنید. اگر جاده بسیار باریک است، سرعت باید طوری باشد که در **نصف فاصله دید** متوقف شوید.</p>
+
+            <blockquote style={{ background: "#1a2f52", borderRight: "4px solid #FF9500", margin: "12px 0", padding: "10px 14px", borderRadius: 4, fontSize: 12, direction: "ltr", textAlign: "left" }}>
+              <strong>💡 فرمول‌های حیاتی آزمون تئوری (مهم):</strong><br/>
+              • Reaktionsweg (مسافت واکنش): (Geschwindigkeit / 10) * 3<br/>
+              • Bremsweg (مسافت ترمز معمولی): (Geschwindigkeit / 10) * (Geschwindigkeit / 10)<br/>
+              • Anhalteweg (مسافت کل توقف): مسافت واکنش + مسافت ترمز
             </blockquote>
 
-            <h5 style={{ color: "#FF9500", fontSize: 13, marginBottom: 4 }}>مزایای کلیدی تبدیل گواهینامه:</h5>
-            <ul style={{ paddingRight: 20, margin: 0, fontSize: 12, listStyleType: "square" }}>
-              <li>نیازی به شرکت در کلاس‌های تئوری اجباری آموزشگاه ندارید.</li>
-              <li>ساعت‌های رانندگی اجباری در اتوبان و شب (Sonderfahrten) حذف می‌شوند (مگر به تشخیص مربی برای آمادگی آزمون عملی).</li>
-            </ul>
-          </div>
-        )}
-
-        {/* ۲. تب مدارک و معاینات پزشکی */}
-        {activeTab === "docs" && (
-          <div>
-            <h4 style={{ color: "#FF9500", marginTop: 0, fontSize: 14 }}>چک‌لیست مدارک و مراکز معاینات پزشکی</h4>
-            <p style={{ fontSize: 13 }}>برای ارائه مدارک به اداره راهنمایی و رانندگی (Fahrerlaubnisbehörde)، مدارک زیر الزامی است:</p>
+            <h5 style={{ color: "#FF9500", fontSize: 13, marginBottom: 4 }}>۲. ترمز اضطراری (Gefahrenbremsung)</h5>
+            <p style={{ fontSize: 13, margin: "0 0 12px 0" }}>اگر خطر ناگهانی رخ دهد و نیاز به ترمز مایکروویوی یا اضطراری باشد، مسافت ترمز به خاطر فشار شدید روی پدال **نصف** می‌شود. فرمول آن: <br/><code style={{color: "#FF9500"}}>[(Geschwindigkeit / 10) * (Geschwindigkeit / 10)] / 2</code></p>
             
-            <ul style={{ paddingRight: 20, fontSize: 12, lineHeight: "2" }}>
-              <li><strong>اصل گواهینامه ایران:</strong> باید تاریخ اعتبار داشته باشد.</li>
-              <li><strong>ترجمه رسمی با تاییدیه ADAC:</strong> باید توسط کلوپ اتومبیل‌رانی آلمان (ADAC) یا مترجمان رسمی دادگستری در آلمان تایید شود.</li>
-              <li><strong>تست بینایی (Sehtest):</strong> می‌توانید به عینک‌فروشی‌های زنجیره‌ای معروف مثل <strong>Fielmann</strong> یا <strong>Apollo</strong> مراجعه کنید. هزینه بسیار کمی دارد و تا ۲ سال معتبر است.</li>
-              <li><strong>دوره کمک‌های اولیه (Erste Hilfe):</strong> یک دوره ۱ روزه (۹ ساعته) است که مراکزی مثل <strong>Malteser</strong>، <strong>Johanniter</strong> یا مؤسسه <strong>شیلت (Schuelt)</strong> آن را برگزار می‌کنند. این گواهی تاریخ انقضا ندارد.</li>
-              <li><strong>عکس بیومتریک و پاسپورت:</strong> به همراه برگه ثبت آدرس خانه.</li>
-            </ul>
-          </div>
-        )}
-
-        {/* ۳. تب آموزشگاه‌های رانندگی فارسی‌زبان */}
-        {activeTab === "schools" && (
-          <div>
-            <h4 style={{ color: "#FF9500", marginTop: 0, fontSize: 14 }}>لیست آموزشگاه‌های دارای مربی فارسی‌زبان در آلمان</h4>
-            <p style={{ fontSize: 12, marginBottom: 12 }}>برای یادگیری راحت‌تر نکات فنی و اصطلاحات عملی، می‌توانید به این مراکز در شهرهای بزرگ مراجعه کنید:</p>
-            
-            {drivingSchools.map((item, idx) => (
-              <div key={idx} style={{ background: "#1a2f52", borderRadius: 8, padding: 10, marginBottom: 8, border: "1px solid #1e3a5f" }}>
-                <strong style={{ color: "#FF9500", fontSize: 13 }}>📍 {item.city}</strong>
-                <ul style={{ paddingRight: 16, margin: "6px 0 0 0", fontSize: 12, color: "#E6EDF3" }}>
-                  {item.schools.map((school, sIdx) => <li key={sIdx}>{school}</li>)}
-                </ul>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* ۴. تب مراجع و کتابچه امتحان */}
-        {activeTab === "references" && (
-          <div>
-            <h4 style={{ color: "#FF9500", marginTop: 0, fontSize: 14 }}>کتابچه آزمون و ساختار امتحانات رسمی آلمان</h4>
-            <p style={{ fontSize: 13 }}>امتحانات گواهینامه در آلمان زیر نظر مستقیم سازمان‌های نظارتی **TÜV** یا **DEKRA** برگزار می‌شود.</p>
-            
-            <h5 style={{ color: "#FF9500", fontSize: 13, marginBottom: 4 }}>۱. آزمون تئوری (Theorieprüfung):</h5>
-            <p style={{ fontSize: 12, margin: "0 0 8px 0" }}>آزمون شامل **۳۰ سوال** تئوری است. خوشبختانه در حالت تبدیل گواهینامه، شما می‌توانید **زبان فارسی** را برای آزمون رسمی تئوری انتخاب کنید. حد نصاب قبولی، داشتن حداکثر ۱۰ امتیاز منفی است (البته نباید دو سوال ۵ امتیازی را غلط بزنید).</p>
-            
-            <h5 style={{ color: "#FF9500", fontSize: 13, marginBottom: 4 }}>۲. آزمون عملی (Praktische Prüfung):</h5>
-            <p style={{ fontSize: 12, margin: "0 0 12px 0" }}>زمان آزمون عملی معمولاً **۴۵ دقیقه** است که شامل کنترل اولیه ماشین، رانندگی در شهر، اتوبان (Autobahn)، پارک کردن و ترمز اضطراری می‌شود. ممتحن آلمانی در صندلی عقب می‌نشیند و عملکرد شما را ارزیابی می‌کند.</p>
-
-            <div style={{ background: "#0A2540", border: "1px dashed #FF9500", borderRadius: 8, padding: 10, fontSize: 11, textAlign: "center", color: "#FF9500" }}>
-              💡 نکته طلایی: این اپلیکیشن با شبیه‌سازی دقیق همین سوالات رسمی TÜV، شما را ۱۰۰٪ برای آزمون تئوری فارسی آماده می‌کند!
-            </div>
+            <h5 style={{ color: "#FF9500", fontSize: 13, marginBottom: 4 }}>۳. فاصله ایمنی با ماشین جلویی (Sicherheitsabstand)</h5>
+            <p style={{ fontSize: 13, margin: 0 }}>در خارج از شهر و اتوبان‌ها، فاصله ایمن با ماشین جلویی طبق قانون **فاصله ۲ ثانیه‌ای** یا فرمول **نصف سرعت روی کیلومترشمار** (Abstand gleich halber Tacho) محاسبه می‌شود. مثلاً اگر با سرعت ۱۰۰ کیلومتر بر ساعت حرکت می‌کنید، فاصله شما با ماشین جلویی باید حداقل ۵۰ متر باشد (معادل فاصله بین دو پست شبرنگ در اتوبان‌ها).</p>
           </div>
         )}
 
