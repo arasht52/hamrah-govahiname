@@ -1,5 +1,13 @@
 import { useState } from "react";
 import { COLORS } from "../theme/colors";
+import {
+  card,
+  mutedText,
+  page,
+  pageTitle,
+  primaryButton,
+  softCard
+} from "../theme/components";
 
 const QUICK = [
   ["🪪 تبدیل گواهینامه", "برای تبدیل گواهینامه ایرانی چه مراحلی لازم است؟"],
@@ -58,9 +66,12 @@ export default function AIPage() {
   }
 
   return (
-    <div>
-      <div style={header}>
-        <h2 style={title}>🤖 FahrKI Demo</h2>
+    <div style={page}>
+      <div>
+        <h2 style={pageTitle}>🤖 FahrKI Demo</h2>
+        <p style={mutedText}>
+          دستیار آزمایشی برای توضیح قوانین، آزمون و نکات گواهینامه آلمان.
+        </p>
       </div>
 
       <div style={betaCard}>
@@ -127,33 +138,19 @@ export default function AIPage() {
   );
 }
 
-const header = {
-  marginBottom: 16
-};
-
-const title = {
-  margin: 0,
-  color: COLORS.text,
-  fontSize: 20,
-  fontWeight: 950
-};
-
 const betaCard = {
+  ...softCard,
   background: COLORS.warningSoft,
   border: `1px solid ${COLORS.warningBorder}`,
   color: COLORS.warningText,
-  borderRadius: 16,
-  padding: 14,
   lineHeight: 1.8,
-  marginBottom: 14,
   fontSize: 13
 };
 
 const quickGrid = {
   display: "grid",
   gridTemplateColumns: "1fr 1fr",
-  gap: 10,
-  marginBottom: 14
+  gap: 10
 };
 
 const quickBtn = {
@@ -168,15 +165,11 @@ const quickBtn = {
 };
 
 const chatBox = {
-  background: COLORS.white,
-  border: `1px solid ${COLORS.border}`,
-  borderRadius: 18,
-  padding: 14,
+  ...card,
   display: "flex",
   flexDirection: "column",
   gap: 10,
-  minHeight: 280,
-  marginBottom: 12
+  minHeight: 280
 };
 
 const bubble = {
@@ -190,8 +183,7 @@ const bubble = {
 
 const inputRow = {
   display: "flex",
-  gap: 8,
-  marginBottom: 14
+  gap: 8
 };
 
 const inputStyle = {
@@ -205,21 +197,14 @@ const inputStyle = {
 };
 
 const sendBtn = {
-  background: COLORS.green,
-  border: "none",
-  borderRadius: 14,
+  ...primaryButton,
+  width: "auto",
   padding: "0 18px",
-  color: COLORS.white,
-  fontWeight: 950,
-  fontFamily: "inherit",
-  cursor: "pointer"
+  borderRadius: 14
 };
 
 const proCard = {
-  background: COLORS.cardSoft,
-  border: `1px solid ${COLORS.border}`,
-  borderRadius: 16,
-  padding: 16,
+  ...softCard,
   color: COLORS.textSoft,
   lineHeight: 1.9,
   fontSize: 13
