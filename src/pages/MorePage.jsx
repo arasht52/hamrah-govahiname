@@ -1,42 +1,35 @@
-export default function MorePage({ onSelect, onBack }) {
 import { COLORS } from "../theme/colors";
 
 const ITEMS = [
   {
     id: "stats",
     icon: "📊",
-    title: "آمار و پیشرفت",
-    desc: "نتایج آزمون‌ها، قبولی‌ها و Fehlerpunkte"
+    title: "آمار",
+    subtitle: "نتایج و پیشرفت شما"
   },
   {
     id: "laws",
     icon: "📖",
-    title: "قوانین رانندگی",
-    desc: "کتابچه فارسی آیین‌نامه آلمان"
+    title: "قوانین",
+    subtitle: "کتابچه آیین‌نامه"
   },
   {
     id: "fahrschulen",
     icon: "🏫",
     title: "آموزشگاه‌ها",
-    desc: "لیست آموزشگاه‌های رانندگی"
-  },
-  {
-    id: "sehtest",
-    icon: "👁",
-    title: "معاینه چشم",
-    desc: "مراکز Sehtest — در حال توسعه"
-  },
-  {
-    id: "firstaid",
-    icon: "⛑",
-    title: "کمک‌های اولیه",
-    desc: "Erste Hilfe Kurs — در حال توسعه"
+    subtitle: "لیست آموزشگاه‌های رانندگی"
   },
   {
     id: "signs",
     icon: "🚦",
-    title: "تابلوهای رانندگی",
-    desc: "آموزش تابلوها — در حال توسعه"
+    title: "تابلوها",
+    subtitle: "دسته‌بندی تابلوهای رانندگی"
+  },
+  {
+    id: "settings",
+    icon: "⚙️",
+    title: "تنظیمات",
+    subtitle: "نسخه برنامه و پاک کردن آمار"
   }
 ];
 
@@ -44,12 +37,12 @@ export default function MorePage({ onSelect }) {
   return (
     <div>
       <div style={hero}>
-        <div style={badge}>☰ منوی بیشتر</div>
+        <div style={badge}>Mehr</div>
 
-        <h2 style={title}>امکانات برنامه</h2>
+        <h2 style={title}>بیشتر</h2>
 
         <p style={subtitle}>
-          دسترسی سریع به بخش‌های جانبی همراه گواهینامه.
+          ابزارهای کمکی برای تمرین، مرور و مدیریت برنامه.
         </p>
       </div>
 
@@ -60,11 +53,11 @@ export default function MorePage({ onSelect }) {
             onClick={() => onSelect(item.id)}
             style={card}
           >
-            <div style={icon}>{item.icon}</div>
+            <div style={iconBox}>{item.icon}</div>
 
-            <div style={{ flex: 1 }}>
+            <div style={textBox}>
               <div style={itemTitle}>{item.title}</div>
-              <div style={itemDesc}>{item.desc}</div>
+              <div style={itemSubtitle}>{item.subtitle}</div>
             </div>
 
             <div style={arrow}>‹</div>
@@ -113,7 +106,7 @@ const subtitle = {
 const list = {
   display: "flex",
   flexDirection: "column",
-  gap: 10
+  gap: 12
 };
 
 const card = {
@@ -125,22 +118,25 @@ const card = {
   display: "flex",
   alignItems: "center",
   gap: 12,
-  textAlign: "right",
+  cursor: "pointer",
   fontFamily: "inherit",
-  cursor: "pointer"
+  textAlign: "right"
 };
 
-const icon = {
-  width: 42,
-  height: 42,
-  borderRadius: 14,
+const iconBox = {
+  width: 46,
+  height: 46,
+  borderRadius: 16,
   background: COLORS.cardSoft,
-  border: `1px solid ${COLORS.borderSoft}`,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  fontSize: 22,
+  fontSize: 24,
   flexShrink: 0
+};
+
+const textBox = {
+  flex: 1
 };
 
 const itemTitle = {
@@ -150,7 +146,7 @@ const itemTitle = {
   marginBottom: 4
 };
 
-const itemDesc = {
+const itemSubtitle = {
   color: COLORS.muted,
   fontSize: 12,
   lineHeight: 1.7
@@ -159,6 +155,5 @@ const itemDesc = {
 const arrow = {
   color: COLORS.green,
   fontSize: 28,
-  fontWeight: 950,
-  transform: "rotate(180deg)"
+  fontWeight: 900
 };
