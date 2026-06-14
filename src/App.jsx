@@ -14,6 +14,7 @@ import LawsPage from "./pages/LawsPage";
 import FahrschulenPage from "./pages/FahrschulenPage";
 import StatsPage from "./pages/StatsPage";
 import MorePage from "./pages/MorePage";
+import SettingsPage from "./pages/SettingsPage";
 
 const APP_CONTAINER_STYLE = {
   fontFamily: "'Vazirmatn', sans-serif",
