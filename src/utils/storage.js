@@ -1,17 +1,68 @@
-const STORAGE_KEY = "fahr_v3";
+const STORAGE_KEY = "hamrah_govahiname_stats";
 
-export function loadState() {
+export function getStats() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      return {
+        attempts: [],
+        totalAttempts: 0,
+        passedAttempts: 0,
+        bestFehlerpunkte: null,
+        averageFehlerpunkte: null
+      };
+    }
+
+    return JSON.parse(raw);
   } catch {
-    return {};
+    return {
+      attempts: [],
+      totalAttempts: 0,
+      passedAttempts: 0,
+      bestFehlerpunkte: null,
+      averageFehlerpunkte: null
+    };
   }
 }
 
-export function saveState(state) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch {
-    // Fail silently for MVP
-  }
+export function saveAttempt(attempt) {
+  const current = getStats();
+  const attempts = [
+    {
+      id: Date.now(),
+      date: new Date().toISOString(),
+      ...attempt
+    },
+    ...current.attempts
+  ].slice(0, 50);
+
+  const examAttempts = attempts.filter((a) => a.isExamMode);
+  const passedAttempts = attempts.filter((a) => a.passed).length;
+
+  const fehlerList = examAttempts
+    .map((a) => a.fehlerpunkte)
+    .filter((n) => typeof n === "number");
+
+  const bestFehlerpunkte =
+    fehlerList.length > 0 ? Math.min(...fehlerList) : null;
+
+  const averageFehlerpunkte =
+    fehlerList.length > 0
+      ? Math.round(fehlerList.reduce((a, b) => a + b, 0) / fehlerList.length)
+      : null;
+
+  const stats = {
+    attempts,
+    totalAttempts: attempts.length,
+    passedAttempts,
+    bestFehlerpunkte,
+    averageFehlerpunkte
+  };
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
+  return stats;
+}
+
+export function clearStats() {
+  localStorage.removeItem(STORAGE_KEY);
 }
