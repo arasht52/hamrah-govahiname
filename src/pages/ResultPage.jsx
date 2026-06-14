@@ -16,7 +16,6 @@ export default function ResultPage({ result, onRetry, onHome }) {
   ).length;
 
   const failedByFivePointRule = fiveWrong >= 2;
-
   const percent = total > 0 ? Math.round((correct / total) * 100) : 0;
 
   const passed = isExamMode
@@ -37,82 +36,82 @@ export default function ResultPage({ result, onRetry, onHome }) {
             color: passed ? "#168A3A" : "#DC2626"
           }}
         >
-          {passed ? "Bestanden" : "Nicht bestanden"}
+          {passed ? "قبول شدی" : "مردود شدی"}
         </h2>
 
         <div style={subTitle}>
-          {passed ? "قبول شدی" : "نیاز به تمرین بیشتر داری"}
+          {passed ? "Bestanden" : "Nicht bestanden"}
         </div>
 
         {isExamMode ? (
           <div style={scoreBox}>
             <div style={scoreNumber}>{fehlerpunkte}</div>
             <div style={scoreLabel}>Fehlerpunkte</div>
-            <div style={limitText}>Grenze: maximal 10 Fehlerpunkte</div>
+            <div style={limitText}>حد مجاز: حداکثر ۱۰ امتیاز منفی</div>
           </div>
         ) : (
           <div style={scoreBox}>
             <div style={scoreNumber}>{percent}%</div>
-            <div style={scoreLabel}>Lernmodus Ergebnis</div>
+            <div style={scoreLabel}>نتیجه تمرین آموزشی</div>
             <div style={limitText}>حد پیشنهادی تمرین: حداقل ۷۰٪</div>
           </div>
         )}
 
         {failedByFivePointRule && (
           <div style={dangerBox}>
-            Nicht bestanden wegen mehrerer Fehlerfragen mit 5 Punkten.
-            <br />
             به دلیل دو یا چند سؤال ۵ امتیازی اشتباه، مردود محسوب می‌شوی.
+            <br />
+            Nicht bestanden wegen mehrerer 5-Punkte-Fehler.
           </div>
         )}
 
         <div style={miniStats}>
           <div style={miniStat}>
             <strong>{total}</strong>
-            <span>Fragen</span>
+            <span>سؤال</span>
           </div>
 
           <div style={miniStat}>
             <strong>{correct}</strong>
-            <span>Richtig</span>
+            <span>درست</span>
           </div>
 
           <div style={miniStat}>
             <strong>{wrong}</strong>
-            <span>Falsch</span>
+            <span>غلط</span>
           </div>
 
           <div style={miniStat}>
             <strong>{fiveWrong}</strong>
-            <span>5-Punkte Fehler</span>
+            <span>۵ امتیازی غلط</span>
           </div>
         </div>
       </div>
 
       <div style={infoCard}>
-        <h3 style={sectionHeading}>Prüfungsbewertung</h3>
+        <h3 style={sectionHeading}>ارزیابی آزمون</h3>
 
         <div style={ruleLine}>
-          <span>Maximal erlaubte Fehlerpunkte</span>
+          <span>حداکثر امتیاز منفی مجاز</span>
           <strong>10</strong>
         </div>
 
         <div style={ruleLine}>
-          <span>Deine Fehlerpunkte</span>
+          <span>امتیاز منفی شما</span>
           <strong style={{ color: passed ? "#168A3A" : "#DC2626" }}>
             {fehlerpunkte}
           </strong>
         </div>
 
         <div style={ruleLine}>
-          <span>Falsche 5-Punkte-Fragen</span>
+          <span>تعداد سؤال‌های ۵ امتیازی غلط</span>
           <strong>{fiveWrong}</strong>
         </div>
       </div>
 
       {markedAnswers.length > 0 && (
         <div style={listCard}>
-          <h3 style={sectionHeading}>🚩 Markierte Fragen</h3>
+          <h3 style={sectionHeading}>🚩 سؤال‌های علامت‌گذاری‌شده</h3>
 
           {markedAnswers.map((a, index) => (
             <QuestionReview key={`marked-${index}`} item={a} index={index} />
@@ -123,7 +122,7 @@ export default function ResultPage({ result, onRetry, onHome }) {
       {wrongAnswers.length > 0 && (
         <div style={listCard}>
           <h3 style={{ ...sectionHeading, color: "#DC2626" }}>
-            Falsche Fragen
+            سؤال‌های اشتباه
           </h3>
 
           {wrongAnswers.map((a, index) => (
@@ -134,12 +133,12 @@ export default function ResultPage({ result, onRetry, onHome }) {
 
       <div style={buttonRow}>
         <button onClick={onHome} style={secondaryBtn}>
-  خانه
-       </button>
+          خانه
+        </button>
 
-       <button onClick={onRetry} style={primaryBtn}>
-  آزمون مجدد
-      </button>
+        <button onClick={onRetry} style={primaryBtn}>
+          آزمون مجدد
+        </button>
       </div>
     </div>
   );
@@ -151,12 +150,15 @@ function QuestionReview({ item, index }) {
   const questionFa = q.q_fa;
   const options = q.opts_de || q.opts || [];
   const optionsFa = q.opts_fa || [];
-  const correctAnswers = Array.isArray(q.ok) ? q.ok : [q.ok];
+  const correctAnswers = Array.isArray(q.ok) ? q.ok : q.ok !== undefined ? [q.ok] : [];
 
   return (
     <details style={reviewItem}>
       <summary style={reviewSummary}>
-        <span>{index + 1}. {questionText}</span>
+        <span>
+          {index + 1}. {questionText}
+        </span>
+
         <span style={pointsBadge}>{q.points || 2} Punkte</span>
       </summary>
 
@@ -184,7 +186,16 @@ function QuestionReview({ item, index }) {
                   : "#FFFFFF"
               }}
             >
-              <span style={checkMark}>
+              <span
+                style={{
+                  ...checkMark,
+                  color: isCorrect
+                    ? "#168A3A"
+                    : userSelected
+                    ? "#DC2626"
+                    : "transparent"
+                }}
+              >
                 {isCorrect ? "✓" : userSelected ? "✕" : ""}
               </span>
 
@@ -193,9 +204,7 @@ function QuestionReview({ item, index }) {
                   {option}
                 </div>
 
-                {optionsFa[i] && (
-                  <div style={optionFa}>{optionsFa[i]}</div>
-                )}
+                {optionsFa[i] && <div style={optionFa}>{optionsFa[i]}</div>}
               </div>
             </div>
           );
@@ -205,6 +214,7 @@ function QuestionReview({ item, index }) {
       {(q.exp_fa || q.exp || q.tip_fa || q.tip) && (
         <div style={explanationBox}>
           {q.exp_fa || q.exp}
+
           {(q.tip_fa || q.tip) && (
             <div style={{ marginTop: 8 }}>
               💡 {q.tip_fa || q.tip}
@@ -401,7 +411,6 @@ const checkMark = {
   alignItems: "center",
   justifyContent: "center",
   fontWeight: 950,
-  color: "#168A3A",
   flexShrink: 0
 };
 
