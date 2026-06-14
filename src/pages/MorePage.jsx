@@ -1,3 +1,4 @@
+export default function MorePage({ onSelect, onBack }) {
 import { COLORS } from "../theme/colors";
 
 const ITEMS = [
