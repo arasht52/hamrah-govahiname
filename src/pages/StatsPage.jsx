@@ -1,3 +1,4 @@
+export default function StatsPage({ onBack }) {
 import { getStats, clearStats } from "../utils/storage";
 import { COLORS } from "../theme/colors";
 
