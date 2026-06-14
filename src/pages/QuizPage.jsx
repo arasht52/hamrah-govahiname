@@ -19,16 +19,12 @@ const MODES = [
   }
 ];
 
-export default function QuizPage({ onStartPractice, onStartExam, onBack }) {
+export default function QuizPage({ onStartPractice, onStartExam }) {
   const [selected, setSelected] = useState("practice");
 
   return (
     <div>
       <div style={topRow}>
-        <button onClick={onBack} style={backBtn}>
-          ← خانه
-        </button>
-
         <h2 style={title}>انتخاب نوع آزمون</h2>
       </div>
 
@@ -73,21 +69,7 @@ export default function QuizPage({ onStartPractice, onStartExam, onBack }) {
 }
 
 const topRow = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
   marginBottom: 20
-};
-
-const backBtn = {
-  background: "#FFFFFF",
-  border: "1px solid #BBD7C0",
-  borderRadius: 12,
-  padding: "10px 14px",
-  color: "#168A3A",
-  fontWeight: 900,
-  cursor: "pointer",
-  fontFamily: "inherit"
 };
 
 const title = {
