@@ -301,6 +301,50 @@ const modeBadge = {
   fontWeight: 950
 };
 
+<div style={questionGrid}>
+  {queue.map((item, i) => {
+    const answered = i < answersList.length;
+    const isCurrent = i === idx;
+    const isMarked = marked[item.id];
+
+    return (
+      <button
+        key={item.id || i}
+        onClick={() => {
+          if (i <= answersList.length) {
+            setIdx(i);
+            setChosenAnswers([]);
+            setShowTranslation(false);
+          }
+        }}
+        disabled={i > answersList.length}
+        style={{
+          ...gridItem,
+          background: isCurrent
+            ? COLORS.text
+            : isMarked
+            ? "#FACC15"
+            : answered
+            ? COLORS.green
+            : COLORS.white,
+          color: isCurrent
+            ? COLORS.white
+            : isMarked
+            ? COLORS.text
+            : answered
+            ? COLORS.white
+            : COLORS.green,
+          borderColor: isCurrent ? COLORS.text : COLORS.border,
+          opacity: i > answersList.length ? 0.45 : 1,
+          cursor: i > answersList.length ? "default" : "pointer"
+        }}
+      >
+        {i + 1}
+      </button>
+    );
+  })}
+</div>
+
 const pointsBadge = {
   background: COLORS.white,
   border: `1px solid ${COLORS.border}`,
@@ -309,6 +353,24 @@ const pointsBadge = {
   padding: "8px 10px",
   fontSize: 12,
   fontWeight: 950
+};
+
+const questionGrid = {
+  display: "grid",
+  gridTemplateColumns: "repeat(10, 1fr)",
+  gap: 6
+};
+
+const gridItem = {
+  height: 34,
+  border: "1px solid",
+  borderRadius: 8,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: 12,
+  fontWeight: 950,
+  fontFamily: "inherit"
 };
 
 const actionRow = {
