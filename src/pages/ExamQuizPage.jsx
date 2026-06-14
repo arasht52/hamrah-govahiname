@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { ALL_QUESTIONS } from "../data/allQuestions";
 import { COLORS } from "../theme/colors";
 import {
+  card,
   page,
   primaryButton,
   secondaryButton
@@ -9,6 +10,8 @@ import {
 
 import QuestionCard from "../components/quiz/QuestionCard";
 import OptionList from "../components/quiz/OptionList";
+
+import { saveExamSession } from "../utils/examSession";
 
 const EXAM_LIMIT_MS = 45 * 60 * 1000;
 
@@ -52,14 +55,30 @@ function buildWrongRecord(question, marked) {
   };
 }
 
-export default function ExamQuizPage({ onFinish, onBack }) {
-  const [queue] = useState(() => selectQuestions(ALL_QUESTIONS, 30));
-  const [idx, setIdx] = useState(0);
-  const [chosenAnswers, setChosenAnswers] = useState([]);
-  const [answersList, setAnswersList] = useState([]);
-  const [marked, setMarked] = useState({});
+export default function ExamQuizPage({
+  onFinish,
+  onBack,
+  savedSession = null,
+  onStartNewExam
+}) {
+  const [queue] = useState(() => {
+    if (savedSession?.queue?.length) return savedSession.queue;
+    return selectQuestions(ALL_QUESTIONS, 30);
+  });
+
+  const [idx, setIdx] = useState(() => savedSession?.idx || 0);
+  const [chosenAnswers, setChosenAnswers] = useState(
+    () => savedSession?.chosenAnswers || []
+  );
+  const [answersList, setAnswersList] = useState(
+    () => savedSession?.answersList || []
+  );
+  const [marked, setMarked] = useState(() => savedSession?.marked || {});
   const [showTranslation, setShowTranslation] = useState(false);
   const [finished, setFinished] = useState(false);
+  const [showResumeBox, setShowResumeBox] = useState(Boolean(savedSession));
+
+  const startedAtRef = useRef(savedSession?.startedAt || Date.now());
 
   const latestRef = useRef({
     idx: 0,
@@ -77,12 +96,26 @@ export default function ExamQuizPage({ onFinish, onBack }) {
       marked,
       queue
     };
-  }, [idx, chosenAnswers, answersList, marked, queue]);
+
+    if (!finished && queue.length > 0) {
+      saveExamSession({
+        queue,
+        idx,
+        chosenAnswers,
+        answersList,
+        marked,
+        startedAt: startedAtRef.current
+      });
+    }
+  }, [idx, chosenAnswers, answersList, marked, queue, finished]);
 
   useEffect(() => {
+    const elapsed = Date.now() - startedAtRef.current;
+    const remaining = Math.max(EXAM_LIMIT_MS - elapsed, 0);
+
     const timer = setTimeout(() => {
       finishByTimeout();
-    }, EXAM_LIMIT_MS);
+    }, remaining);
 
     return () => clearTimeout(timer);
   }, []);
@@ -156,6 +189,40 @@ export default function ExamQuizPage({ onFinish, onBack }) {
     setIdx((prev) => prev + 1);
     setChosenAnswers([]);
     setShowTranslation(false);
+  }
+
+  if (showResumeBox) {
+    return (
+      <div style={page}>
+        <div style={resumeCard}>
+          <div style={resumeIcon}>📝</div>
+
+          <h2 style={resumeTitle}>آزمون نیمه‌تمام پیدا شد</h2>
+
+          <p style={resumeText}>
+            یک آزمون رسمی قبلاً شروع شده و هنوز تمام نشده است.
+          </p>
+
+          <div style={resumeMeta}>
+            سؤال {idx + 1} از {queue.length}
+          </div>
+
+          <button
+            onClick={() => setShowResumeBox(false)}
+            style={primaryAction}
+          >
+            ادامه آزمون
+          </button>
+
+          <button
+            onClick={onStartNewExam}
+            style={secondaryFull}
+          >
+            شروع آزمون جدید
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -272,4 +339,46 @@ const secondaryAction = {
   width: "auto",
   borderRadius: 10,
   padding: "8px 12px"
+};
+
+const secondaryFull = {
+  ...secondaryButton,
+  borderRadius: 14,
+  padding: "14px 0",
+  marginTop: 10
+};
+
+const resumeCard = {
+  ...card,
+  textAlign: "center",
+  padding: 24
+};
+
+const resumeIcon = {
+  fontSize: 44,
+  marginBottom: 10
+};
+
+const resumeTitle = {
+  margin: "0 0 10px",
+  color: COLORS.text,
+  fontSize: 22,
+  fontWeight: 950
+};
+
+const resumeText = {
+  color: COLORS.muted,
+  fontSize: 13,
+  lineHeight: 1.9,
+  margin: "0 0 14px"
+};
+
+const resumeMeta = {
+  background: COLORS.cardSoft,
+  border: `1px solid ${COLORS.borderSoft}`,
+  borderRadius: 14,
+  padding: 12,
+  color: COLORS.green,
+  fontWeight: 950,
+  marginBottom: 14
 };
