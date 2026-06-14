@@ -6,7 +6,6 @@ export default function BottomNav({ active, onSelect }) {
   { id: "quiz", icon: "📝", label: "آزمون" },
   { id: "ai", icon: "🤖", label: "دستیار" },
   { id: "more", icon: "☰", label: "بیشتر" }
-];
   ];
 
   return (
