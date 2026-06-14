@@ -4,6 +4,8 @@ import { COLORS } from "../theme/colors";
 import {
   card,
   dangerButton,
+  mutedText,
+  page,
   sectionTitle
 } from "../theme/components";
 
@@ -18,10 +20,10 @@ export default function SettingsPage({ onBack }) {
   };
 
   return (
-    <div>
+    <div style={page}>
       <PageHeader title="تنظیمات" onBack={onBack} />
 
-      <div style={{ ...card, marginBottom: 14 }}>
+      <div style={card}>
         <div style={label}>نسخه برنامه</div>
         <div style={value}>1.0.0</div>
       </div>
@@ -29,7 +31,7 @@ export default function SettingsPage({ onBack }) {
       <div style={card}>
         <h3 style={sectionTitle}>مدیریت داده‌ها</h3>
 
-        <p style={text}>
+        <p style={{ ...mutedText, marginBottom: 14 }}>
           آمار آزمون‌ها و تمرین‌ها در حافظه مرورگر ذخیره می‌شود.
         </p>
 
@@ -52,11 +54,4 @@ const value = {
   color: COLORS.text,
   fontSize: 18,
   fontWeight: 950
-};
-
-const text = {
-  color: COLORS.muted,
-  lineHeight: 1.9,
-  margin: "0 0 14px",
-  fontSize: 14
 };
