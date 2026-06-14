@@ -2,6 +2,14 @@ import { useState } from "react";
 import PageHeader from "../components/PageHeader";
 import { COLORS } from "../theme/colors";
 import { bookData } from "./bookData";
+import {
+  badge,
+  card,
+  heroCard,
+  mutedText,
+  page,
+  pageTitle
+} from "../theme/components";
 
 const chapters = [
   { id: "1", title: "فصل ۱: انسان به عنوان راننده" },
@@ -25,21 +33,21 @@ export default function LawsPage({ onBack }) {
   const content = bookData[selectedChapter]?.content;
 
   return (
-    <div>
+    <div style={page}>
       <PageHeader title="قوانین رانندگی" onBack={onBack} />
 
-      <div style={hero}>
+      <div style={heroCard}>
         <div style={badge}>📖 قوانین رانندگی آلمان</div>
 
-        <h2 style={title}>کتابچه آیین‌نامه</h2>
+        <h2 style={pageTitle}>کتابچه آیین‌نامه</h2>
 
-        <p style={subtitle}>
+        <p style={mutedText}>
           خلاصه آموزشی و فارسی‌سازی‌شده از مباحث اصلی آیین‌نامه رانندگی آلمان
           برای آمادگی بهتر در آزمون تئوری.
         </p>
       </div>
 
-      <div style={selectCard}>
+      <div style={card}>
         <label style={label}>انتخاب فصل</label>
 
         <select
@@ -55,7 +63,7 @@ export default function LawsPage({ onBack }) {
         </select>
       </div>
 
-      <div style={contentCard}>
+      <div style={card}>
         <div style={chapterHeader}>
           <h3 style={chapterTitle}>{currentChapter?.title}</h3>
           <span style={chapterBadge}>Kapitel {selectedChapter}</span>
@@ -86,49 +94,6 @@ export default function LawsPage({ onBack }) {
   );
 }
 
-const hero = {
-  background: COLORS.white,
-  border: `1px solid ${COLORS.border}`,
-  borderRadius: 22,
-  padding: 20,
-  marginBottom: 16,
-  boxShadow: "0 8px 24px rgba(22,138,58,0.08)"
-};
-
-const badge = {
-  display: "inline-block",
-  background: COLORS.cardSoft,
-  border: `1px solid ${COLORS.borderSoft}`,
-  color: COLORS.green,
-  borderRadius: 18,
-  padding: "5px 12px",
-  fontSize: 12,
-  fontWeight: 950,
-  marginBottom: 12
-};
-
-const title = {
-  margin: "0 0 8px",
-  color: COLORS.text,
-  fontSize: 24,
-  fontWeight: 950
-};
-
-const subtitle = {
-  color: COLORS.muted,
-  lineHeight: 1.9,
-  fontSize: 13,
-  margin: 0
-};
-
-const selectCard = {
-  background: COLORS.white,
-  border: `1px solid ${COLORS.border}`,
-  borderRadius: 18,
-  padding: 16,
-  marginBottom: 16
-};
-
 const label = {
   display: "block",
   color: COLORS.green,
@@ -149,15 +114,6 @@ const selectStyle = {
   cursor: "pointer",
   outline: "none",
   direction: "rtl"
-};
-
-const contentCard = {
-  background: COLORS.white,
-  border: `1px solid ${COLORS.border}`,
-  borderRadius: 18,
-  padding: 18,
-  color: COLORS.text,
-  marginBottom: 16
 };
 
 const chapterHeader = {
