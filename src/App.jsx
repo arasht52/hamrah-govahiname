@@ -82,11 +82,11 @@ export default function App() {
 
         {page === "ai" && <AIPage onBack={() => setPage("home")} />}
 
-        {page === "laws" && <LawsPage />}
+       {page === "laws" && <LawsPage onBack={() => setPage("more")} />}
 
-        {page === "fahrschulen" && <FahrschulenPage />}
+       {page === "fahrschulen" && <FahrschulenPage onBack={() => setPage("more")} />}
 
-        {page === "stats" && <StatsPage />}
+        {page === "stats" && <StatsPage onBack={() => setPage("more")} />}
         
         {page === "signs" && <SignsPage onBack={() => setPage("more")} />}
 
