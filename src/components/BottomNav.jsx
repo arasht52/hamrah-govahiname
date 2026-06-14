@@ -1,5 +1,6 @@
 export default function BottomNav({ active, onSelect }) {
   const tabs = [
+    { id: "stats", icon: "📊", label: "آمار" },
     { id: "home", icon: "🏠", label: "خانه" },
     { id: "quiz", icon: "📝", label: "آزمون" },
     { id: "laws", icon: "📚", label: "قوانین" },
