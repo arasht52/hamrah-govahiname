@@ -1,3 +1,4 @@
+import PageHeader from "../components/PageHeader";
 export default function FahrschulenPage({ onBack }) {
 import { COLORS } from "../theme/colors";
 
@@ -49,7 +50,10 @@ export default function FahrschulenPage() {
           لیست نمایشی آموزشگاه‌ها برای ارائه MVP. اطلاعات واقعی باید قبل از انتشار عمومی راستی‌آزمایی شود.
         </p>
       </div>
-
+<PageHeader
+  title="آموزشگاه‌های رانندگی"
+  onBack={onBack}
+/>
       {SCHOOLS.map((school) => (
         <div key={school.id} style={card}>
           <div style={row}>
