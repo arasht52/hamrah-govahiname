@@ -80,8 +80,6 @@ export default function App() {
           />
         )}
 
-         {page === "signs" && <SignsPage onBack={() => setPage("more")} />}
-        
         {page === "ai" && <AIPage onBack={() => setPage("home")} />}
 
         {page === "laws" && <LawsPage />}
@@ -89,6 +87,8 @@ export default function App() {
         {page === "fahrschulen" && <FahrschulenPage />}
 
         {page === "stats" && <StatsPage />}
+        
+        {page === "signs" && <SignsPage onBack={() => setPage("more")} />}
 
         {page === "more" && <MorePage onSelect={(id) => setPage(id)} />}
       </main>
