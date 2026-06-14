@@ -44,7 +44,10 @@ export default function AIPage({ onBack }) {
         <button onClick={onBack} style={backBtn}>← برگشت</button>
         <h2 style={title}>🤖 FahrKI Demo</h2>
       </div>
-
+<PageHeader
+  title="دستیار هوشمند"
+  onBack={onBack}
+/>
       <div style={betaCard}>
         🚧 نسخه آزمایشی
         <br />
