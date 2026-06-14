@@ -16,9 +16,17 @@
         color: #E6EDF3;
       }
     </style>
+        <link rel="manifest" href="/hamrah-govahiname/manifest.json" />
+    <meta name="theme-color" content="#FF9500" />
+
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+        <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/hamrah-govahiname/sw.js');
+      }
+    </script>
   </body>
 </html>
