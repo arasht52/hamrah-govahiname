@@ -218,9 +218,14 @@ export default function QuizPage({ onFinish, onBack }) {
       <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
         {options.map((opt, i) => {
           const isSelected = chosenAnswers.includes(i);
-          let border = "#1e3a5f", bg = "#1a2f52", color = "#E6EDF3";
+                    let border = "#1e3a5f", bg = "#1a2f52", color = "#E6EDF3";
           if (!answered && isSelected) { border = "#FF9500"; bg = "rgba(255,149,0,0.08)"; }
-          if (answered && isSelected)  { border = "#4D6080"; bg = "#112240"; }
+          if (answered && !examMode) {
+            if (correctAnswers.includes(i))      { border = "#2EA043"; bg = "rgba(46,160,67,0.15)"; color = "#7EE787"; }
+            else if (isSelected)                  { border = "#EF4444"; bg = "rgba(239,68,68,0.12)"; color = "#FCA5A5"; }
+            else                                  { color = "#4D6080"; }
+          }
+          if (answered && examMode && isSelected) { border = "#4D6080"; bg = "#112240"; }
 
           return (
             <button key={`opt-${q.id}-${i}`} onClick={() => toggleOption(i)} disabled={answered}
@@ -243,6 +248,18 @@ export default function QuizPage({ onFinish, onBack }) {
           );
         })}
       </div>
+{answered && !examMode && (
+  <div style={{ background: "#112240", border: "1px solid #1e3a5f", borderRadius: 14, padding: 16, marginBottom: 14 }}>
+    <div style={{ fontSize: 11, fontWeight: 700, color: "#60A5FA", marginBottom: 8 }}>💡 Erklärung</div>
+    <p style={{ fontSize: 13, lineHeight: 1.85, color: "#E6EDF3", margin: 0, direction: "rtl" }}>{q.exp_fa}</p>
+    {q.tip_fa && (
+      <div style={{ background: "rgba(96,165,250,0.08)", border: "1px solid rgba(96,165,250,0.2)", borderRadius: 9, padding: "8px 12px", marginTop: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: "#60A5FA", marginBottom: 3 }}>📌 نکته</div>
+        <p style={{ fontSize: 12, color: "#8B949E", lineHeight: 1.7, margin: 0, direction: "rtl" }}>{q.tip_fa}</p>
+      </div>
+    )}
+  </div>
+)}
 
       {/* پیام بعد از ثبت */}
       {/* دکمه‌ها */}
