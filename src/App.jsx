@@ -92,7 +92,7 @@ export default function App() {
 {page === "stats" && <StatsPage onBack={() => setPage("more")} />}
 
 {page === "settings" && (
-  <SettingPage onBack={() => setPage("more")} />
+  <SettingsPage onBack={() => setPage("more")} />
 )}
 
 {page === "signs" && <SignsPage onBack={() => setPage("more")} />}
