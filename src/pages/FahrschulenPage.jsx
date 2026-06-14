@@ -1,5 +1,14 @@
 import PageHeader from "../components/PageHeader";
 import { COLORS } from "../theme/colors";
+import {
+  card,
+  heroCard,
+  mutedText,
+  page,
+  pageTitle,
+  primaryButton,
+  secondaryButton
+} from "../theme/components";
 
 const SCHOOLS = [
   {
@@ -11,7 +20,8 @@ const SCHOOLS = [
     reviews: "89",
     languages: "فارسی / Deutsch / English",
     tags: ["فارسی", "دوره فشرده", "موتور", "تبدیل گواهینامه"],
-    description: "دوره فشرده ۲ هفته‌ای. کلاس تئوری فارسی دوشنبه و سه‌شنبه ۱۷:۳۰–۱۹:۰۰. تلفن: 040 55635102",
+    description:
+      "دوره فشرده ۲ هفته‌ای. کلاس تئوری فارسی دوشنبه و سه‌شنبه ۱۷:۳۰–۱۹:۰۰. تلفن: 040 55635102",
     website: "https://www.ab-fahrschule.de",
     maps: "https://maps.google.com/?q=Tornberg+32+22337+Hamburg"
   },
@@ -24,7 +34,8 @@ const SCHOOLS = [
     reviews: "124",
     languages: "فارسی / Deutsch / English / Türkçe",
     tags: ["فارسی", "تئوری ۷ روزه", "آنلاین"],
-    description: "مدرس ایرانی (Ehsan Safarzadeh). ثبت‌نام پایه ۵۹۹ یورو. تلفن: 040 72002933",
+    description:
+      "مدرس ایرانی (Ehsan Safarzadeh). ثبت‌نام پایه ۵۹۹ یورو. تلفن: 040 72002933",
     website: "https://fahrschule-wandsbek.de",
     maps: "https://maps.google.com/?q=Wandsbeker+Zollstr+115+22041+Hamburg"
   },
@@ -37,7 +48,8 @@ const SCHOOLS = [
     reviews: "67",
     languages: "فارسی / Deutsch / English",
     tags: ["فارسی", "تبدیل گواهینامه", "از ۱۹۹۷"],
-    description: "Hossein Rezai فارسی صحبت می‌کند. کلاس تئوری فارسی روزهای شنبه. ماشین‌های Mercedes. تلفن: 0171 5301344",
+    description:
+      "Hossein Rezai فارسی صحبت می‌کند. کلاس تئوری فارسی روزهای شنبه. ماشین‌های Mercedes. تلفن: 0171 5301344",
     website: "https://www.fahrschule-rezai.de",
     maps: "https://maps.google.com/?q=Eigenstrasse+63+47053+Duisburg"
   }
@@ -45,12 +57,13 @@ const SCHOOLS = [
 
 export default function FahrschulenPage({ onBack }) {
   return (
-    <div>
+    <div style={page}>
       <PageHeader title="آموزشگاه‌های رانندگی" onBack={onBack} />
 
-      <div style={hero}>
-        <h2 style={title}>🏫 آموزشگاه‌های رانندگی</h2>
-        <p style={subtitle}>
+      <div style={heroCard}>
+        <h2 style={pageTitle}>🏫 آموزشگاه‌های رانندگی</h2>
+
+        <p style={mutedText}>
           لیست نمایشی آموزشگاه‌ها برای ارائه MVP. اطلاعات واقعی باید قبل از
           انتشار عمومی راستی‌آزمایی شود.
         </p>
@@ -59,7 +72,7 @@ export default function FahrschulenPage({ onBack }) {
       {SCHOOLS.map((school) => (
         <div key={school.id} style={card}>
           <div style={row}>
-            <div>
+            <div style={{ flex: 1 }}>
               <h3 style={schoolName}>{school.name}</h3>
               <div style={muted}>📍 {school.address}</div>
               <div style={muted}>🌐 {school.languages}</div>
@@ -105,36 +118,6 @@ export default function FahrschulenPage({ onBack }) {
   );
 }
 
-const hero = {
-  background: COLORS.white,
-  border: `1px solid ${COLORS.border}`,
-  borderRadius: 22,
-  padding: 20,
-  marginBottom: 16,
-  boxShadow: "0 8px 24px rgba(22,138,58,0.08)"
-};
-
-const title = {
-  margin: "0 0 8px",
-  color: COLORS.text,
-  fontSize: 24,
-  fontWeight: 950
-};
-
-const subtitle = {
-  color: COLORS.muted,
-  lineHeight: 1.9,
-  fontSize: 13
-};
-
-const card = {
-  background: COLORS.white,
-  border: `1px solid ${COLORS.border}`,
-  borderRadius: 18,
-  padding: 16,
-  marginBottom: 14
-};
-
 const row = {
   display: "flex",
   justifyContent: "space-between",
@@ -144,7 +127,8 @@ const row = {
 const schoolName = {
   margin: "0 0 6px",
   fontSize: 17,
-  color: COLORS.text
+  color: COLORS.text,
+  fontWeight: 950
 };
 
 const muted = {
@@ -192,26 +176,21 @@ const actions = {
 };
 
 const primaryLink = {
+  ...primaryButton,
   flex: 2,
-  background: COLORS.green,
-  color: COLORS.white,
   borderRadius: 12,
   padding: "12px 0",
   textAlign: "center",
   textDecoration: "none",
-  fontWeight: 950,
   fontSize: 13
 };
 
 const secondaryLink = {
+  ...secondaryButton,
   flex: 1,
-  background: COLORS.white,
-  color: COLORS.green,
-  border: `1px solid ${COLORS.border}`,
   borderRadius: 12,
   padding: "12px 0",
   textAlign: "center",
   textDecoration: "none",
-  fontWeight: 900,
   fontSize: 13
 };
