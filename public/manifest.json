@@ -1,0 +1,25 @@
+{
+  "name": "همراه گواهینامه",
+  "short_name": "گواهینامه",
+  "description": "آموزش آزمون گواهینامه رانندگی آلمان به فارسی",
+  "start_url": "/hamrah-govahiname/",
+  "scope": "/hamrah-govahiname/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0A2540",
+  "theme_color": "#FF9500",
+  "lang": "fa",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
