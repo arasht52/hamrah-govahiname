@@ -1,3 +1,4 @@
+export default function LawsPage({ onBack }) {
 import { useState } from "react";
 import { COLORS } from "../theme/colors";
 import { bookData } from "./bookData";
