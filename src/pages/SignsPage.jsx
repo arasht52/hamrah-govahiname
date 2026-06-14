@@ -123,8 +123,22 @@ export default function SignsPage({ onBack }) {
         </div>
       ))}
 
-      <div style={{ background: COLORS.warningSoft, border: `1px solid ${COLORS.warningBorder}`, color: COLORS.warningText, borderRadius: 16, padding: 14, fontSize: 12, lineHeight: 1.8, marginTop: 8 }}>
-  ⚠️ این بخش آموزشی است. بعضی تصاویر به‌صورت نمونه نمایش داده می‌شوند و قبل از انتشار عمومی باید با منابع رسمی StVO / TÜV / DEKRA راستی‌آزمایی شوند.
-</div>
+            <div
+        style={{
+          background: COLORS.warningSoft,
+          border: `1px solid ${COLORS.warningBorder}`,
+          color: COLORS.warningText,
+          borderRadius: 16,
+          padding: 14,
+          fontSize: 12,
+          lineHeight: 1.8,
+          marginTop: 8
+        }}
+      >
+        ⚠️ این بخش آموزشی است. بعضی تصاویر به‌صورت نمونه نمایش داده می‌شوند و
+        قبل از انتشار عمومی باید با منابع رسمی StVO / TÜV / DEKRA
+        راستی‌آزمایی شوند.
+      </div>
+    </div>
   );
 }
