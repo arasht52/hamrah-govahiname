@@ -82,19 +82,21 @@ export default function App() {
 
         {page === "ai" && <AIPage onBack={() => setPage("more")} />}
 
-         {page === "laws" && <LawsPage onBack={() => setPage("more")} />}
+{page === "laws" && <LawsPage onBack={() => setPage("more")} />}
 
-         {page === "fahrschulen" && (
+{page === "fahrschulen" && (
   <FahrschulenPage onBack={() => setPage("more")} />
 )}
 
-        {page === "stats" && <StatsPage onBack={() => setPage("more")} />}
+{page === "stats" && <StatsPage onBack={() => setPage("more")} />}
 
-        {page === "settings" && <SettingPage onBack={() => setPage("more")} />}
+{page === "settings" && (
+  <SettingPage onBack={() => setPage("more")} />
+)}
 
-        {page === "signs" && <SignsPage onBack={() => setPage("more")} />}
+{page === "signs" && <SignsPage onBack={() => setPage("more")} />}
 
-        {page === "more" && <MorePage onSelect={(id) => setPage(id)} />}
+{page === "more" && <MorePage onSelect={(id) => setPage(id)} />}
 
       </main>
 
