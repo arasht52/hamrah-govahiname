@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { QUESTIONS } from "../data/questions";
+import { ALL_QUESTIONS } from "../data/allQuestions";
 
 const EXAM_LIMIT_MS = 45 * 60 * 1000;
 
