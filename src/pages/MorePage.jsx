@@ -37,7 +37,7 @@ const ITEMS = [
   icon: "❌",
   title: "سؤال‌های غلط",
   subtitle: "مرور اشتباهات قبلی"
-}
+},
   {
     id: "settings",
     icon: "⚙️",
