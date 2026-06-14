@@ -245,12 +245,6 @@ export default function QuizPage({ onFinish, onBack }) {
       </div>
 
       {/* پیام بعد از ثبت */}
-      {answered && (
-        <div style={{ background: "#112240", border: "1px solid #1e3a5f", borderRadius: 10, padding: "10px 14px", marginBottom: 12, fontSize: 13, color: "#8B949E", textAlign: "center", direction: "ltr" }}>
-          Antwort gespeichert.
-        </div>
-      )}
-
       {/* دکمه‌ها */}
       <div style={{ display: "flex", gap: 8 }}>
         <button onClick={() => setMarked(p => ({ ...p, [idx]: !p[idx] }))}
