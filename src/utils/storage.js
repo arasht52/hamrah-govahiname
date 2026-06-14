@@ -1,32 +1,35 @@
 const STORAGE_KEY = "hamrah_govahiname_stats";
 
+const EMPTY_STATS = {
+  attempts: [],
+  totalAttempts: 0,
+  practiceAttempts: 0,
+  examAttempts: 0,
+  passedAttempts: 0,
+  passRate: 0,
+  bestFehlerpunkte: null,
+  worstFehlerpunkte: null,
+  averageFehlerpunkte: null,
+  lastAttempt: null
+};
+
 export function getStats() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      return {
-        attempts: [],
-        totalAttempts: 0,
-        passedAttempts: 0,
-        bestFehlerpunkte: null,
-        averageFehlerpunkte: null
-      };
-    }
+    if (!raw) return EMPTY_STATS;
 
-    return JSON.parse(raw);
-  } catch {
     return {
-      attempts: [],
-      totalAttempts: 0,
-      passedAttempts: 0,
-      bestFehlerpunkte: null,
-      averageFehlerpunkte: null
+      ...EMPTY_STATS,
+      ...JSON.parse(raw)
     };
+  } catch {
+    return EMPTY_STATS;
   }
 }
 
 export function saveAttempt(attempt) {
   const current = getStats();
+
   const attempts = [
     {
       id: Date.now(),
@@ -36,15 +39,24 @@ export function saveAttempt(attempt) {
     ...current.attempts
   ].slice(0, 50);
 
-  const examAttempts = attempts.filter((a) => a.isExamMode);
+  const totalAttempts = attempts.length;
+  const practiceAttempts = attempts.filter((a) => !a.isExamMode).length;
+  const examAttempts = attempts.filter((a) => a.isExamMode).length;
   const passedAttempts = attempts.filter((a) => a.passed).length;
 
-  const fehlerList = examAttempts
+  const passRate =
+    totalAttempts > 0 ? Math.round((passedAttempts / totalAttempts) * 100) : 0;
+
+  const fehlerList = attempts
+    .filter((a) => a.isExamMode)
     .map((a) => a.fehlerpunkte)
     .filter((n) => typeof n === "number");
 
   const bestFehlerpunkte =
     fehlerList.length > 0 ? Math.min(...fehlerList) : null;
+
+  const worstFehlerpunkte =
+    fehlerList.length > 0 ? Math.max(...fehlerList) : null;
 
   const averageFehlerpunkte =
     fehlerList.length > 0
@@ -53,10 +65,15 @@ export function saveAttempt(attempt) {
 
   const stats = {
     attempts,
-    totalAttempts: attempts.length,
+    totalAttempts,
+    practiceAttempts,
+    examAttempts,
     passedAttempts,
+    passRate,
     bestFehlerpunkte,
-    averageFehlerpunkte
+    worstFehlerpunkte,
+    averageFehlerpunkte,
+    lastAttempt: attempts[0] || null
   };
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
