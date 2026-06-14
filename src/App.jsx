@@ -5,6 +5,8 @@ import BottomNav from "./components/BottomNav";
 
 import HomePage from "./pages/HomePage";
 import QuizPage from "./pages/QuizPage";
+import PracticeQuizPage from "./pages/PracticeQuizPage";
+import ExamQuizPage from "./pages/ExamQuizPage";
 import ResultPage from "./pages/ResultPage";
 import AIPage from "./pages/AIPage";
 import LawsPage from "./pages/LawsPage";
@@ -28,6 +30,11 @@ export default function App() {
   const [page, setPage] = useState("home");
   const [quizResult, setQuizResult] = useState(null);
 
+  const finishQuiz = (result) => {
+    setQuizResult(result);
+    setPage("result");
+  };
+
   return (
     <div style={APP_CONTAINER_STYLE}>
       <Header />
@@ -42,11 +49,23 @@ export default function App() {
 
         {page === "quiz" && (
           <QuizPage
-            onFinish={(result) => {
-              setQuizResult(result);
-              setPage("result");
-            }}
+            onStartPractice={() => setPage("practice")}
+            onStartExam={() => setPage("exam")}
             onBack={() => setPage("home")}
+          />
+        )}
+
+        {page === "practice" && (
+          <PracticeQuizPage
+            onFinish={finishQuiz}
+            onBack={() => setPage("quiz")}
+          />
+        )}
+
+        {page === "exam" && (
+          <ExamQuizPage
+            onFinish={finishQuiz}
+            onBack={() => setPage("quiz")}
           />
         )}
 
@@ -65,7 +84,10 @@ export default function App() {
         {page === "fahrschulen" && <FahrschulenPage />}
       </main>
 
-      <BottomNav active={page} onSelect={setPage} />
+      <BottomNav
+        active={page === "practice" || page === "exam" ? "quiz" : page}
+        onSelect={setPage}
+      />
     </div>
   );
 }
