@@ -65,10 +65,9 @@ export default function App() {
   />
  )}
 
-     {page === "laws" && (
-  <LawsPage />
- )}
-{page === "fahrschulen" && (
+     {page === "laws" && <LawsPage onBack={() => setPage("home")} />}
+
+    {page === "fahrschulen" && (
   <FahrschulenPage />
 )}
       </main>
