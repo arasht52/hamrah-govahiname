@@ -2,7 +2,7 @@ import PageHeader from "../components/PageHeader";
 import { clearStats } from "../utils/storage";
 import { COLORS } from "../theme/colors";
 
-export default function SettingPage({ onBack }) {
+export default function SettingsPage({ onBack }) {
   const handleClearStats = () => {
     const ok = window.confirm("آیا مطمئن هستید که می‌خواهید آمار پاک شود؟");
     if (!ok) return;
@@ -25,7 +25,7 @@ export default function SettingPage({ onBack }) {
         <h3 style={sectionTitle}>مدیریت داده‌ها</h3>
 
         <p style={text}>
-          آمار آزمون‌ها و تمرین‌ها در حافظه همین مرورگر ذخیره می‌شود.
+          آمار آزمون‌ها و تمرین‌ها در حافظه مرورگر ذخیره می‌شود.
         </p>
 
         <button onClick={handleClearStats} style={dangerBtn}>
