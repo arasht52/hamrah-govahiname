@@ -3,6 +3,7 @@ import { useState } from "react";
 import Header from "./components/Header";
 import BottomNav from "./components/BottomNav";
 
+import StatsPage from "./pages/StatsPage";
 import HomePage from "./pages/HomePage";
 import QuizPage from "./pages/QuizPage";
 import PracticeQuizPage from "./pages/PracticeQuizPage";
@@ -46,7 +47,6 @@ export default function App() {
             onOpenAI={() => setPage("ai")}
           />
         )}
-
         {page === "quiz" && (
           <QuizPage
             onStartPractice={() => setPage("practice")}
@@ -80,7 +80,7 @@ export default function App() {
         {page === "ai" && <AIPage onBack={() => setPage("home")} />}
 
         {page === "laws" && <LawsPage />}
-
+        {page === "stats" && <StatsPage />}
         {page === "fahrschulen" && <FahrschulenPage />}
       </main>
 
