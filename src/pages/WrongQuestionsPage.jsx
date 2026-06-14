@@ -1,10 +1,15 @@
 import PageHeader from "../components/PageHeader";
 import { getStats } from "../utils/storage";
 import { COLORS } from "../theme/colors";
-import { card, page, sectionTitle } from "../theme/components";
+import {
+  card,
+  page,
+  primaryButton,
+  sectionTitle
+} from "../theme/components";
 import QuestionReview from "../components/result/QuestionReview";
 
-export default function WrongQuestionsPage({ onBack }) {
+export default function WrongQuestionsPage({ onBack, onStartPractice }) {
   const stats = getStats();
   const attempts = stats.attempts || [];
 
@@ -41,12 +46,16 @@ export default function WrongQuestionsPage({ onBack }) {
           <div style={summaryNumber}>{uniqueWrongItems.length}</div>
           <div style={summaryLabel}>سؤال غلط منحصربه‌فرد</div>
         </div>
+
+        {uniqueWrongItems.length > 0 && (
+          <button onClick={onStartPractice} style={practiceBtn}>
+            تمرین با سؤال‌های غلط
+          </button>
+        )}
       </div>
 
       {uniqueWrongItems.length === 0 ? (
-        <div style={emptyBox}>
-          هنوز سؤال غلطی ذخیره نشده است.
-        </div>
+        <div style={emptyBox}>هنوز سؤال غلطی ذخیره نشده است.</div>
       ) : (
         <div style={card}>
           {uniqueWrongItems.map((item, index) => (
@@ -74,7 +83,8 @@ const summaryBox = {
   border: `1px solid ${COLORS.borderSoft}`,
   borderRadius: 16,
   padding: 16,
-  textAlign: "center"
+  textAlign: "center",
+  marginBottom: 14
 };
 
 const summaryNumber = {
@@ -87,6 +97,12 @@ const summaryLabel = {
   color: COLORS.muted,
   fontSize: 12,
   fontWeight: 900
+};
+
+const practiceBtn = {
+  ...primaryButton,
+  borderRadius: 14,
+  padding: "14px 0"
 };
 
 const emptyBox = {
