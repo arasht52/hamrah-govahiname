@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { QUESTIONS } from "../data/questions";
+import { ALL_QUESTIONS } from "../data/allQuestions";
 
 function selectQuestions(pool, count) {
   return [...pool]
