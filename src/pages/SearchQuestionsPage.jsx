@@ -7,11 +7,20 @@ export default function SearchQuestionsPage({ onBack }) {
   const [query, setQuery] = useState("");
 
   const results = ALL_QUESTIONS.filter((q) => {
-    const text =
-      `${q.q_de || q.q} ${q.q_fa || ""}`.toLowerCase();
+  const text = `
+    ${q.id || ""}
+    ${q.q_de || ""}
+    ${q.q || ""}
+    ${q.q_fa || ""}
+    ${(q.opts_de || []).join(" ")}
+    ${(q.opts || []).join(" ")}
+    ${(q.opts_fa || []).join(" ")}
+    ${q.exp_fa || ""}
+    ${q.tip_fa || ""}
+  `.toLowerCase();
 
-    return text.includes(query.toLowerCase());
-  });
+  return text.includes(query.toLowerCase());
+});
 
   return (
     <div>
