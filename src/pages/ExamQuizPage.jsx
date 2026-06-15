@@ -44,6 +44,32 @@ function buildResult(queue, answers) {
     const correct =
       chosenAnswers.length > 0 && isExactAnswer(chosenAnswers, correctAnswers);
 
+function handleFinishRequest() {
+  const unanswered = [];
+
+  queue.forEach((q, i) => {
+    const key = getQuestionKey(q, i);
+    const chosen = answers[key]?.chosenAnswers || [];
+
+    if (chosen.length === 0) {
+      unanswered.push(i + 1);
+    }
+  });
+
+  if (unanswered.length === 0) {
+    finishExam(false);
+    return;
+  }
+
+  const ok = window.confirm(
+    `${unanswered.length} سؤال هنوز بدون پاسخ هستند.\n\n${unanswered.join(", ")}\n\nآیا می‌خواهید آزمون پایان یابد؟`
+  );
+
+  if (ok) {
+    finishExam(false);
+  }
+}
+
     return {
       question: q,
       correct,
