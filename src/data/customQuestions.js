@@ -4,7 +4,7 @@ export const CUSTOM_QUESTIONS = [
     chapter: 4,
     points: 5,
     type: "image",
-    image_url: "/images/intersection_hamburg.jpg",
+    image_url: `${import.meta.env.BASE_URL}images/intersection_hamburg.jpg`,
 
     q_de:
       "Sie möchten links abbiegen. Wie ist die richtige Reihenfolge?",
