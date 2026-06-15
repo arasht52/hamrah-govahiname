@@ -12,7 +12,7 @@ import ResultSummary from "../components/result/ResultSummary";
 import QuestionReview from "../components/result/QuestionReview";
 import ResultSection from "../components/result/ResultSection";
 
-export default function ResultPage({ result, onRetry, onHome }) {
+export default function ResultPage({ result, onRetry, onHome, onWrongQuestions }) { 
   const answersList = result?.answersList || [];
   const isExamMode = result?.isExamMode ?? false;
 
@@ -126,11 +126,19 @@ const ruleLine = {
   fontSize: 13
 };
 
-const buttonRow = {
-  display: "flex",
-  gap: 12,
-  marginBottom: 20
-};
+<div style={buttonRow}>
+  <button onClick={onHome} style={secondaryAction}>
+    خانه
+  </button>
+
+  <button onClick={onWrongQuestions} style={wrongAction}>
+    سؤال‌های غلط
+  </button>
+
+  <button onClick={onRetry} style={primaryAction}>
+    آزمون مجدد
+  </button>
+</div>
 
 const secondaryAction = {
   ...secondaryButton,
@@ -142,4 +150,11 @@ const primaryAction = {
   ...primaryButton,
   flex: 2,
   borderRadius: 14
+};
+const wrongAction = {
+  ...secondaryButton,
+  flex: 1.4,
+  borderRadius: 14,
+  color: COLORS.danger,
+  borderColor: COLORS.dangerBorder
 };
