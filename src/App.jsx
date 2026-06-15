@@ -143,11 +143,11 @@ export default function App() {
 
         {page === "result" && (
            <ResultPage
-            result={quizResult}
-            onRetry={() => setPage("quiz")}
-            onHome={() => setPage("home")}
-            onWrongQuestions={() => setPage("wrongQuestions")}
-          />
+  result={quizResult}
+  onRetry={() => setPage("quiz")}
+  onHome={() => setPage("home")}
+  onWrongQuestions={startWrongQuestionsPractice}
+/>
         )}
 
         {page === "ai" && <AIPage />}
