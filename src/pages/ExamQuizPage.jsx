@@ -10,7 +10,6 @@ import {
 
 import QuestionCard from "../components/quiz/QuestionCard";
 import OptionList from "../components/quiz/OptionList";
-
 import { saveExamSession } from "../utils/examSession";
 
 const EXAM_LIMIT_MS = 45 * 60 * 1000;
@@ -19,6 +18,10 @@ function selectQuestions(pool, count) {
   return [...pool]
     .sort(() => Math.random() - 0.5)
     .slice(0, Math.min(count, pool.length));
+}
+
+function getQuestionKey(q, index) {
+  return q.id || q.q_de || q.q || `question-${index}`;
 }
 
 function normalizeOk(ok) {
@@ -32,27 +35,23 @@ function isExactAnswer(chosen, correct) {
   );
 }
 
-function buildAnswerRecord(question, chosenAnswers, marked) {
-  const correctAnswers = normalizeOk(question.ok);
-  const correct = isExactAnswer(chosenAnswers, correctAnswers);
+function buildResult(queue, answers) {
+  return queue.map((q, index) => {
+    const key = getQuestionKey(q, index);
+    const saved = answers[key] || {};
+    const chosenAnswers = saved.chosenAnswers || [];
+    const correctAnswers = normalizeOk(q.ok);
+    const correct =
+      chosenAnswers.length > 0 && isExactAnswer(chosenAnswers, correctAnswers);
 
-  return {
-    question,
-    correct,
-    chosenAnswers: [...chosenAnswers],
-    fehlerpunkte: correct ? 0 : question.points || 2,
-    marked
-  };
-}
-
-function buildWrongRecord(question, marked) {
-  return {
-    question,
-    correct: false,
-    chosenAnswers: [],
-    fehlerpunkte: question.points || 2,
-    marked
-  };
+    return {
+      question: q,
+      correct,
+      chosenAnswers,
+      fehlerpunkte: correct ? 0 : q.points || 2,
+      marked: !!saved.marked
+    };
+  });
 }
 
 export default function ExamQuizPage({
@@ -67,13 +66,7 @@ export default function ExamQuizPage({
   });
 
   const [idx, setIdx] = useState(() => savedSession?.idx || 0);
-  const [chosenAnswers, setChosenAnswers] = useState(
-    () => savedSession?.chosenAnswers || []
-  );
-  const [answersList, setAnswersList] = useState(
-    () => savedSession?.answersList || []
-  );
-  const [marked, setMarked] = useState(() => savedSession?.marked || {});
+  const [answers, setAnswers] = useState(() => savedSession?.answers || {});
   const [showTranslation, setShowTranslation] = useState(false);
   const [finished, setFinished] = useState(false);
   const [showResumeBox, setShowResumeBox] = useState(Boolean(savedSession));
@@ -81,114 +74,93 @@ export default function ExamQuizPage({
   const startedAtRef = useRef(savedSession?.startedAt || Date.now());
 
   const latestRef = useRef({
-    idx: 0,
-    chosenAnswers: [],
-    answersList: [],
-    marked: {},
-    queue: []
+    queue: [],
+    answers: {},
+    idx: 0
   });
 
+  const q = queue[idx];
+  const currentKey = q ? getQuestionKey(q, idx) : null;
+  const currentAnswer = currentKey ? answers[currentKey] || {} : {};
+  const chosenAnswers = currentAnswer.chosenAnswers || [];
+  const currentMarked = !!currentAnswer.marked;
+
   useEffect(() => {
-    latestRef.current = {
-      idx,
-      chosenAnswers,
-      answersList,
-      marked,
-      queue
-    };
+    latestRef.current = { queue, answers, idx };
 
     if (!finished && queue.length > 0) {
       saveExamSession({
         queue,
         idx,
-        chosenAnswers,
-        answersList,
-        marked,
+        answers,
         startedAt: startedAtRef.current
       });
     }
-  }, [idx, chosenAnswers, answersList, marked, queue, finished]);
+  }, [queue, answers, idx, finished]);
 
   useEffect(() => {
     const elapsed = Date.now() - startedAtRef.current;
     const remaining = Math.max(EXAM_LIMIT_MS - elapsed, 0);
 
     const timer = setTimeout(() => {
-      finishByTimeout();
+      finishExam(true);
     }, remaining);
 
     return () => clearTimeout(timer);
   }, []);
 
-  const q = queue[idx];
   if (!q) return null;
 
   const options = q.opts_de || q.opts || [];
   const optionsFa = q.opts_fa || [];
-  const currentMarked = !!marked[q.id];
 
-  function finishByTimeout() {
-    const latest = latestRef.current;
-
-    if (!latest.queue.length) return;
-
-    const finalAnswers = [...latest.answersList];
-
-    for (let i = latest.answersList.length; i < latest.queue.length; i++) {
-      const question = latest.queue[i];
-      const isCurrent = i === latest.idx;
-      const questionMarked = !!latest.marked[question.id];
-
-      if (isCurrent && latest.chosenAnswers.length > 0) {
-        finalAnswers.push(
-          buildAnswerRecord(question, latest.chosenAnswers, questionMarked)
-        );
-      } else {
-        finalAnswers.push(buildWrongRecord(question, questionMarked));
+  function updateCurrentAnswer(nextData) {
+    setAnswers((prev) => ({
+      ...prev,
+      [currentKey]: {
+        chosenAnswers: prev[currentKey]?.chosenAnswers || [],
+        marked: prev[currentKey]?.marked || false,
+        ...nextData
       }
-    }
-
-    setFinished(true);
-
-    onFinish({
-      answersList: finalAnswers,
-      isExamMode: true,
-      timedOut: true
-    });
+    }));
   }
 
   function toggleAnswer(optionIndex) {
     if (finished) return;
 
-    setChosenAnswers((prev) =>
-      prev.includes(optionIndex)
-        ? prev.filter((x) => x !== optionIndex)
-        : [...prev, optionIndex]
-    );
+    const current = chosenAnswers;
+
+    const nextChosen = current.includes(optionIndex)
+      ? current.filter((x) => x !== optionIndex)
+      : [...current, optionIndex];
+
+    updateCurrentAnswer({ chosenAnswers: nextChosen });
   }
 
-  function submitAnswer() {
-    if (chosenAnswers.length === 0 || finished) return;
+  function toggleMarked() {
+    updateCurrentAnswer({ marked: !currentMarked });
+  }
 
-    const record = buildAnswerRecord(q, chosenAnswers, currentMarked);
-    const updated = [...answersList, record];
+  function goToQuestion(nextIndex) {
+    if (nextIndex < 0 || nextIndex >= queue.length) return;
 
-    setAnswersList(updated);
-
-    if (idx + 1 >= queue.length) {
-      setFinished(true);
-
-      onFinish({
-        answersList: updated,
-        isExamMode: true
-      });
-
-      return;
-    }
-
-    setIdx((prev) => prev + 1);
-    setChosenAnswers([]);
+    setIdx(nextIndex);
     setShowTranslation(false);
+  }
+
+  function finishExam(timedOut = false) {
+    if (finished) return;
+
+    const latest = latestRef.current;
+    const answersList = buildResult(latest.queue, latest.answers);
+
+    setFinished(true);
+
+    onFinish({
+      answersList,
+      isExamMode: true,
+      timedOut
+    });
   }
 
   if (showResumeBox) {
@@ -207,17 +179,11 @@ export default function ExamQuizPage({
             سؤال {idx + 1} از {queue.length}
           </div>
 
-          <button
-            onClick={() => setShowResumeBox(false)}
-            style={primaryAction}
-          >
+          <button onClick={() => setShowResumeBox(false)} style={primaryAction}>
             ادامه آزمون
           </button>
 
-          <button
-            onClick={onStartNewExam}
-            style={secondaryFull}
-          >
+          <button onClick={onStartNewExam} style={secondaryFull}>
             شروع آزمون جدید
           </button>
         </div>
@@ -252,11 +218,46 @@ export default function ExamQuizPage({
         onToggle={toggleAnswer}
       />
 
+      <div style={questionGrid}>
+        {queue.map((item, i) => {
+          const key = getQuestionKey(item, i);
+          const saved = answers[key] || {};
+          const answered = (saved.chosenAnswers || []).length > 0;
+          const isCurrent = i === idx;
+          const isMarked = !!saved.marked;
+
+          return (
+            <button
+              key={key}
+              onClick={() => goToQuestion(i)}
+              style={{
+                ...gridItem,
+                background: isCurrent
+                  ? COLORS.text
+                  : isMarked
+                  ? "#FACC15"
+                  : answered
+                  ? COLORS.green
+                  : COLORS.white,
+                color: isCurrent
+                  ? COLORS.white
+                  : isMarked
+                  ? COLORS.text
+                  : answered
+                  ? COLORS.white
+                  : COLORS.green,
+                borderColor: isCurrent ? COLORS.text : COLORS.border
+              }}
+            >
+              {i + 1}
+            </button>
+          );
+        })}
+      </div>
+
       <div style={actionRow}>
         <button
-          onClick={() =>
-            setMarked((prev) => ({ ...prev, [q.id]: !prev[q.id] }))
-          }
+          onClick={toggleMarked}
           style={{
             ...markBtn,
             background: currentMarked ? "#FACC15" : COLORS.white,
@@ -268,13 +269,8 @@ export default function ExamQuizPage({
         </button>
 
         <button
-          onClick={submitAnswer}
-          disabled={chosenAnswers.length === 0}
-          style={{
-            ...primaryAction,
-            opacity: chosenAnswers.length === 0 ? 0.45 : 1,
-            cursor: chosenAnswers.length === 0 ? "default" : "pointer"
-          }}
+          onClick={() => finishExam(false)}
+          style={primaryAction}
         >
           Abgabe
         </button>
@@ -301,50 +297,6 @@ const modeBadge = {
   fontWeight: 950
 };
 
-<div style={questionGrid}>
-  {queue.map((item, i) => {
-    const answered = i < answersList.length;
-    const isCurrent = i === idx;
-    const isMarked = marked[item.id];
-
-    return (
-      <button
-        key={item.id || i}
-        onClick={() => {
-          if (i <= answersList.length) {
-            setIdx(i);
-            setChosenAnswers([]);
-            setShowTranslation(false);
-          }
-        }}
-        disabled={i > answersList.length}
-        style={{
-          ...gridItem,
-          background: isCurrent
-            ? COLORS.text
-            : isMarked
-            ? "#FACC15"
-            : answered
-            ? COLORS.green
-            : COLORS.white,
-          color: isCurrent
-            ? COLORS.white
-            : isMarked
-            ? COLORS.text
-            : answered
-            ? COLORS.white
-            : COLORS.green,
-          borderColor: isCurrent ? COLORS.text : COLORS.border,
-          opacity: i > answersList.length ? 0.45 : 1,
-          cursor: i > answersList.length ? "default" : "pointer"
-        }}
-      >
-        {i + 1}
-      </button>
-    );
-  })}
-</div>
-
 const pointsBadge = {
   background: COLORS.white,
   border: `1px solid ${COLORS.border}`,
@@ -370,7 +322,8 @@ const gridItem = {
   justifyContent: "center",
   fontSize: 12,
   fontWeight: 950,
-  fontFamily: "inherit"
+  fontFamily: "inherit",
+  cursor: "pointer"
 };
 
 const actionRow = {
