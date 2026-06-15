@@ -7,43 +7,50 @@ export default function SearchQuestionsPage({ onBack }) {
   const [query, setQuery] = useState("");
 
   const results = ALL_QUESTIONS.filter((q) => {
-  const text = `
-    ${q.id || ""}
-    ${q.q_de || ""}
-    ${q.q || ""}
-    ${q.q_fa || ""}
-    ${(q.opts_de || []).join(" ")}
-    ${(q.opts || []).join(" ")}
-    ${(q.opts_fa || []).join(" ")}
-    ${q.exp_fa || ""}
-    ${q.tip_fa || ""}
-  `.toLowerCase();
+    const text = `
+      ${q.id || ""}
+      ${q.q_de || ""}
+      ${q.q || ""}
+      ${q.q_fa || ""}
+      ${(q.opts_de || []).join(" ")}
+      ${(q.opts || []).join(" ")}
+      ${(q.opts_fa || []).join(" ")}
+      ${q.exp_fa || ""}
+      ${q.tip_fa || ""}
+    `.toLowerCase();
 
-  return text.includes(query.toLowerCase());
-});
+    return text.includes(query.toLowerCase());
+  });
+
+  const hasCustom401 = ALL_QUESTIONS.some((q) => Number(q.id) === 401);
 
   return (
     <div>
       <PageHeader title="جستجوی سؤال‌ها" onBack={onBack} />
 
+      <div style={debugBox}>
+        تعداد کل سؤال‌ها: {ALL_QUESTIONS.length}
+        <br />
+        سؤال ۴۰۱ داخل بانک هست؟ {hasCustom401 ? "بله" : "نه"}
+      </div>
+
       <input
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="مثلاً Vorfahrt ،Parken ،Autobahn ..."
+        placeholder="مثلاً 401 یا چپ یا Vorfahrt ..."
         style={inputStyle}
       />
 
       <div style={{ marginTop: 16 }}>
         {results.map((q, i) => (
-          <div key={i} style={card}>
+          <div key={q.id || i} style={card}>
             <div style={deStyle}>
-              {q.q_de || q.q}
+              {q.id && <span>#{q.id} — </span>}
+              {q.q_de || q.q || q.q_fa}
             </div>
 
-            {q.q_fa && (
-              <div style={faStyle}>
-                {q.q_fa}
-              </div>
+            {q.q_fa && q.q_de && (
+              <div style={faStyle}>{q.q_fa}</div>
             )}
 
             <div style={pointStyle}>
@@ -55,6 +62,17 @@ export default function SearchQuestionsPage({ onBack }) {
     </div>
   );
 }
+
+const debugBox = {
+  background: COLORS.warningSoft,
+  border: `1px solid ${COLORS.warningBorder}`,
+  color: COLORS.warningText,
+  borderRadius: 14,
+  padding: 12,
+  fontSize: 12,
+  lineHeight: 1.8,
+  marginBottom: 12
+};
 
 const inputStyle = {
   width: "100%",
