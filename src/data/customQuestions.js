@@ -6,8 +6,17 @@ export const CUSTOM_QUESTIONS = [
     type: "image",
     image_url: "/images/intersection_hamburg.webp",
 
+    q_de:
+      "Sie möchten links abbiegen. Wie ist die richtige Reihenfolge?",
+
     q_fa:
       "شما قصد دارید به چپ بپیچید. در این تقاطع بدون تابلو و چراغ راهنمایی، ترتیب صحیح عبور چگونه است؟",
+
+    opts_de: [
+      "Zuerst ich, dann der weiße Lkw und zuletzt der blaue Pkw",
+      "Zuerst der weiße Lkw, dann der blaue Pkw und zuletzt ich",
+      "Zuerst der blaue Pkw, dann der weiße Lkw und zuletzt ich"
+    ],
 
     opts_fa: [
       "ابتدا من، سپس کامیون سفید و در آخر خودروی آبی",
