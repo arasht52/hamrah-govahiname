@@ -91,13 +91,13 @@ export default function App() {
   });
 
   if (questions.length === 0) {
+    alert("هنوز سؤال غلطی برای تمرین وجود ندارد.");
     return;
   }
 
   setWrongPracticeQuestions(questions);
   setPage("wrongPractice");
 };
-
   return (
     <div style={APP_CONTAINER_STYLE}>
       <Header />
