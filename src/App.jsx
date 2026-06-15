@@ -138,12 +138,13 @@ export default function App() {
         )}
 
         {page === "result" && (
-          <ResultPage
-            result={quizResult}
-            onRetry={() => setPage("quiz")}
-            onHome={() => setPage("home")}
-          />
-        )}
+  <ResultPage
+    result={quizResult}
+    onRetry={() => setPage("quiz")}
+    onHome={() => setPage("home")}
+    onWrongQuestions={() => setPage("wrongQuestions")}
+  />
+)}
 
         {page === "ai" && <AIPage />}
 
