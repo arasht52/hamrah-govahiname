@@ -68,31 +68,35 @@ export default function App() {
   };
 
   const startWrongQuestionsPractice = () => {
-    const stats = getStats();
-    const attempts = stats.attempts || [];
+  const stats = getStats();
+  const attempts = stats.attempts || [];
 
-    const wrongItems = attempts
-      .flatMap((attempt) => attempt.answersList || [])
-      .filter((item) => !item.correct);
+  const wrongItems = attempts
+    .flatMap((attempt) => attempt.answersList || [])
+    .filter((item) => !item.correct);
 
-    const questions = [];
-    const seen = new Set();
+  const questions = [];
+  const seen = new Set();
 
-    wrongItems.forEach((item) => {
-      const q = item.question;
-      if (!q) return;
+  wrongItems.forEach((item) => {
+    const q = item.question;
+    if (!q) return;
 
-      const key = q.id || q.q_de || q.q;
+    const key = q.id || q.q_de || q.q;
 
-      if (!seen.has(key)) {
-        seen.add(key);
-        questions.push(q);
-      }
-    });
+    if (!seen.has(key)) {
+      seen.add(key);
+      questions.push(q);
+    }
+  });
 
-    setWrongPracticeQuestions(questions);
-    setPage("wrongPractice");
-  };
+  if (questions.length === 0) {
+    return;
+  }
+
+  setWrongPracticeQuestions(questions);
+  setPage("wrongPractice");
+};
 
   return (
     <div style={APP_CONTAINER_STYLE}>
