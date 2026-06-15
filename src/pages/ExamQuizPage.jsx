@@ -41,34 +41,9 @@ function buildResult(queue, answers) {
     const saved = answers[key] || {};
     const chosenAnswers = saved.chosenAnswers || [];
     const correctAnswers = normalizeOk(q.ok);
+
     const correct =
       chosenAnswers.length > 0 && isExactAnswer(chosenAnswers, correctAnswers);
-
-function handleFinishRequest() {
-  const unanswered = [];
-
-  queue.forEach((q, i) => {
-    const key = getQuestionKey(q, i);
-    const chosen = answers[key]?.chosenAnswers || [];
-
-    if (chosen.length === 0) {
-      unanswered.push(i + 1);
-    }
-  });
-
-  if (unanswered.length === 0) {
-    finishExam(false);
-    return;
-  }
-
-  const ok = window.confirm(
-    `${unanswered.length} سؤال هنوز بدون پاسخ هستند.\n\n${unanswered.join(", ")}\n\nآیا می‌خواهید آزمون پایان یابد؟`
-  );
-
-  if (ok) {
-    finishExam(false);
-  }
-}
 
     return {
       question: q,
@@ -96,6 +71,7 @@ export default function ExamQuizPage({
   const [showTranslation, setShowTranslation] = useState(false);
   const [finished, setFinished] = useState(false);
   const [showResumeBox, setShowResumeBox] = useState(Boolean(savedSession));
+  const [showFinishModal, setShowFinishModal] = useState(false);
 
   const startedAtRef = useRef(savedSession?.startedAt || Date.now());
 
@@ -154,11 +130,9 @@ export default function ExamQuizPage({
   function toggleAnswer(optionIndex) {
     if (finished) return;
 
-    const current = chosenAnswers;
-
-    const nextChosen = current.includes(optionIndex)
-      ? current.filter((x) => x !== optionIndex)
-      : [...current, optionIndex];
+    const nextChosen = chosenAnswers.includes(optionIndex)
+      ? chosenAnswers.filter((x) => x !== optionIndex)
+      : [...chosenAnswers, optionIndex];
 
     updateCurrentAnswer({ chosenAnswers: nextChosen });
   }
@@ -172,6 +146,27 @@ export default function ExamQuizPage({
 
     setIdx(nextIndex);
     setShowTranslation(false);
+  }
+
+  function handleAbgabe() {
+    if (idx + 1 < queue.length) {
+      goToQuestion(idx + 1);
+    }
+  }
+
+  function getUnansweredNumbers() {
+    const unanswered = [];
+
+    queue.forEach((question, i) => {
+      const key = getQuestionKey(question, i);
+      const chosen = answers[key]?.chosenAnswers || [];
+
+      if (chosen.length === 0) {
+        unanswered.push(i + 1);
+      }
+    });
+
+    return unanswered;
   }
 
   function finishExam(timedOut = false) {
@@ -216,6 +211,8 @@ export default function ExamQuizPage({
       </div>
     );
   }
+
+  const unansweredNumbers = getUnansweredNumbers();
 
   return (
     <div style={page}>
@@ -294,13 +291,52 @@ export default function ExamQuizPage({
           {currentMarked ? "Markiert" : "Markieren"}
         </button>
 
-        <button
-          onClick={() => finishExam(false)}
-          style={primaryAction}
-        >
+        <button onClick={handleAbgabe} style={primaryAction}>
           Abgabe
         </button>
       </div>
+
+      <button onClick={() => setShowFinishModal(true)} style={finishButton}>
+        Prüfung beenden
+      </button>
+
+      {showFinishModal && (
+        <div style={modalOverlay}>
+          <div style={modalCard}>
+            <h3 style={modalTitle}>آزمون پایان یابد؟</h3>
+
+            {unansweredNumbers.length > 0 ? (
+              <>
+                <p style={modalText}>
+                  {unansweredNumbers.length} سؤال هنوز بدون پاسخ هستند.
+                </p>
+
+                <div style={unansweredBox}>
+                  {unansweredNumbers.join(", ")}
+                </div>
+              </>
+            ) : (
+              <p style={modalText}>
+                همه سؤال‌ها پاسخ داده شده‌اند. آیا می‌خواهید نتیجه آزمون را
+                ببینید؟
+              </p>
+            )}
+
+            <div style={modalActions}>
+              <button
+                onClick={() => setShowFinishModal(false)}
+                style={secondaryFull}
+              >
+                بازگشت به آزمون
+              </button>
+
+              <button onClick={() => finishExam(false)} style={primaryAction}>
+                نمایش نتیجه
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -355,8 +391,7 @@ const gridItem = {
 const actionRow = {
   display: "grid",
   gridTemplateColumns: "1fr 2fr",
-  gap: 10,
-  marginBottom: 20
+  gap: 10
 };
 
 const markBtn = {
@@ -387,6 +422,15 @@ const secondaryFull = {
   borderRadius: 14,
   padding: "14px 0",
   marginTop: 10
+};
+
+const finishButton = {
+  ...secondaryButton,
+  borderRadius: 14,
+  padding: "14px 0",
+  borderColor: COLORS.dangerBorder,
+  color: COLORS.danger,
+  marginBottom: 20
 };
 
 const resumeCard = {
@@ -422,4 +466,55 @@ const resumeMeta = {
   color: COLORS.green,
   fontWeight: 950,
   marginBottom: 14
+};
+
+const modalOverlay = {
+  position: "fixed",
+  inset: 0,
+  background: "rgba(0,0,0,0.35)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: 20,
+  zIndex: 999
+};
+
+const modalCard = {
+  background: COLORS.white,
+  borderRadius: 20,
+  padding: 20,
+  width: "100%",
+  maxWidth: 420,
+  border: `1px solid ${COLORS.border}`,
+  boxShadow: "0 20px 60px rgba(0,0,0,0.2)"
+};
+
+const modalTitle = {
+  margin: "0 0 10px",
+  color: COLORS.text,
+  fontSize: 20,
+  fontWeight: 950
+};
+
+const modalText = {
+  color: COLORS.muted,
+  fontSize: 13,
+  lineHeight: 1.9,
+  margin: "0 0 12px"
+};
+
+const unansweredBox = {
+  background: COLORS.cardSoft,
+  border: `1px solid ${COLORS.borderSoft}`,
+  borderRadius: 12,
+  padding: 12,
+  color: COLORS.danger,
+  fontWeight: 950,
+  lineHeight: 1.8,
+  marginBottom: 10
+};
+
+const modalActions = {
+  display: "grid",
+  gap: 8
 };
