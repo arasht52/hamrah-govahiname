@@ -23,4 +23,4 @@ export const CUSTOM_QUESTIONS = [
     tip_fa:
       "گردش به چپ + حق تقدم از سمت راست."
   }
-];[];
+];
