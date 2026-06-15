@@ -9,7 +9,10 @@ import {
 } from "../theme/components";
 import QuestionReview from "../components/result/QuestionReview";
 
-export default function WrongQuestionsPage({ onBack, onStartPractice }) {
+export default function WrongQuestionsPage({
+  onBack,
+  onStartPractice
+}) {
   const stats = getStats();
   const attempts = stats.attempts || [];
 
@@ -38,24 +41,33 @@ export default function WrongQuestionsPage({ onBack, onStartPractice }) {
         <h3 style={sectionTitle}>مرور اشتباهات</h3>
 
         <p style={text}>
-          این بخش سؤال‌هایی را نشان می‌دهد که در تمرین‌ها یا آزمون‌های قبلی غلط
-          جواب داده‌ای.
+          در این بخش سؤال‌هایی که قبلاً اشتباه پاسخ داده‌ای نمایش داده می‌شوند.
         </p>
 
         <div style={summaryBox}>
-          <div style={summaryNumber}>{uniqueWrongItems.length}</div>
-          <div style={summaryLabel}>سؤال غلط منحصربه‌فرد</div>
+          <div style={summaryNumber}>
+            {uniqueWrongItems.length}
+          </div>
+
+          <div style={summaryLabel}>
+            سؤال غلط منحصربه‌فرد
+          </div>
         </div>
 
         {uniqueWrongItems.length > 0 && (
-          <button onClick={onStartPractice} style={practiceBtn}>
+          <button
+            onClick={onStartPractice}
+            style={practiceBtn}
+          >
             تمرین با سؤال‌های غلط
           </button>
         )}
       </div>
 
       {uniqueWrongItems.length === 0 ? (
-        <div style={emptyBox}>هنوز سؤال غلطی ذخیره نشده است.</div>
+        <div style={emptyBox}>
+          هنوز سؤال غلطی ذخیره نشده است.
+        </div>
       ) : (
         <div style={card}>
           {uniqueWrongItems.map((item, index) => (
@@ -75,7 +87,7 @@ const text = {
   color: COLORS.muted,
   lineHeight: 1.9,
   fontSize: 13,
-  margin: "0 0 14px"
+  marginBottom: 14
 };
 
 const summaryBox = {
